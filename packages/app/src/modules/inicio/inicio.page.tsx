@@ -1,6 +1,7 @@
 // inicio.page.tsx
 import { useState, useEffect, useRef } from 'react';
 import './inicio.style.css';
+import { useNavigate } from 'react-router-dom';
 
 // ── Types ────────────────────────────────────────────────────
 interface Usuario {
@@ -82,11 +83,12 @@ const POSTS_MOCK: Post[] = [
 ];
 
 // ── Usuário mock para demonstração ───────────────────────────
-const USUARIO_MOCK: Usuario = {
-    id: 'usuario_atual',
-    nome: 'Usuário Demo',
-    handle: 'demouser',
-};
+const USUARIO_MOCK: Usuario | null = null; // Mudar para null para simular usuário não logado
+// const USUARIO_MOCK: Usuario = {  // Descomentar para testar com usuário logado
+//     id: '1',
+//     nome: 'Miguel Alves',
+//     handle: 'demouser',
+// };
 
 // ── Utils ─────────────────────────────────────────────────────
 function formatarTempo(iso: string): string {
@@ -183,16 +185,18 @@ function PostCard({ post }: { post: Post }) {
 function ComposeBox({
     onPublicar,
     publicando,
+    usuarioLogado,
 }: {
     onPublicar: (conteudo: string, tags: string[]) => Promise<void>;
     publicando: boolean;
+    usuarioLogado: Usuario | null;
 }) {
     const [texto, setTexto] = useState('');
     const [tagsSelecionadas, setTagsSelecionadas] = useState<string[]>([]);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const restantes = LIMITE_CARACTERES - texto.length;
-    const podePublicar = texto.trim().length > 0 && restantes >= 0 && !publicando;
+    const podePublicar = texto.trim().length > 0 && restantes >= 0 && !publicando && usuarioLogado !== null;
 
     function autoResize() {
         const el = textareaRef.current;
@@ -220,10 +224,21 @@ function ComposeBox({
         : restantes <= 20 ? 'char-counter warning'
         : 'char-counter';
 
+    if (!usuarioLogado) {
+        return (
+            <div className="compose-box login-prompt">
+                <div className="login-prompt-content">
+                    <p>Faça login para compartilhar algo com a comunidade</p>
+                    <button className="login-prompt-btn">Entrar</button>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="compose-box">
             <div className="compose-avatar">
-                {iniciais(USUARIO_MOCK.nome)}
+                {iniciais(usuarioLogado.nome)}
             </div>
 
             <div className="compose-right">
@@ -327,11 +342,13 @@ function ModalPublicar({
     onFechar,
     onPublicar,
     publicando,
+    usuarioLogado,
 }: {
     aberto: boolean;
     onFechar: () => void;
     onPublicar: (conteudo: string, tags: string[]) => Promise<void>;
     publicando: boolean;
+    usuarioLogado: Usuario | null;
 }) {
     if (!aberto) return null;
     return (
@@ -343,6 +360,7 @@ function ModalPublicar({
                 <ComposeBox
                     onPublicar={async (c, t) => { await onPublicar(c, t); onFechar(); }}
                     publicando={publicando}
+                    usuarioLogado={usuarioLogado}
                 />
             </div>
         </div>
@@ -358,8 +376,12 @@ export function InicioPage() {
     const [abaAtiva, setAbaAtiva] = useState<'recentes' | 'populares'>('recentes');
     const [tagAtiva, setTagAtiva] = useState<string | null>(null);
     const [modalAberto, setModalAberto] = useState(false);
+    const [usuarioLogado, setUsuarioLogado] = useState<Usuario | null>(USUARIO_MOCK);
+    const navigate = useNavigate();
 
     useEffect(() => {
+        
+
         const buscar = async () => {
             setCarregando(true);
             setErro(null);
@@ -378,6 +400,8 @@ export function InicioPage() {
     }, [abaAtiva]);
 
     async function handlePublicar(conteudo: string, tags: string[]) {
+        if (!usuarioLogado) return;
+        
         setPublicando(true);
         try {
             const novoPost: Post = {
@@ -385,7 +409,7 @@ export function InicioPage() {
                 conteudo,
                 tags,
                 criadoEm: new Date().toISOString(),
-                autor: USUARIO_MOCK,
+                autor: usuarioLogado,
                 curtidas: 0,
                 curtidoPorMim: false,
             };
@@ -393,6 +417,14 @@ export function InicioPage() {
         } finally {
             setPublicando(false);
         }
+    }
+
+    function tratarBotaoEntrar() {
+        navigate('/entrar');
+    }
+
+    function handleLogout() {
+        setUsuarioLogado(null);
     }
 
     const estatisticasTags = TAGS_DISPONIVEIS.map((nome) => ({
@@ -414,27 +446,43 @@ export function InicioPage() {
             {/* ── Sidebar ── */}
             <nav className="sidebar">
                 <div className="sidebar-logo">
-                    <span className="sidebar-logo-title">Mono Repo</span>
-                    <span className="sidebar-logo-sub">comunidade dev</span>
+                    <span className="sidebar-logo-title">Monorepo</span>
+                    <span className="sidebar-logo-sub">@dev-macb</span>
                 </div>
 
                 <div className="sidebar-nav">
                     <button className="nav-item active">
                         <span>⌂</span>
-                        <span>Início</span>
+                        <span>Postagens</span>
+                    </button>
+
+                    <button className="nav-item">
+                        <span>⌂</span>
+                        <span>Tags</span>
                     </button>
                 </div>
 
                 <div className="sidebar-bottom">
-                    <div className="sidebar-user">
-                        <div className="sidebar-avatar">
-                            {iniciais(USUARIO_MOCK.nome)}
-                        </div>
-                        <div className="sidebar-user-info">
-                            <div className="sidebar-user-name">{USUARIO_MOCK.nome}</div>
-                            <div className="sidebar-user-handle">@{USUARIO_MOCK.handle}</div>
-                        </div>
-                    </div>
+                    {usuarioLogado ? (
+                        <>
+                            <div className="sidebar-user">
+                                <div className="sidebar-avatar">
+                                    {iniciais(usuarioLogado.nome)}
+                                </div>
+
+                                <div className="sidebar-user-info">
+                                    <div className="sidebar-user-name">{usuarioLogado.nome}</div>
+                                </div>
+                            </div>
+                            <button className="sidebar-logout-btn" onClick={handleLogout}>
+                                Sair
+                            </button>
+                        </>
+                    ) : (
+                        <button className="sidebar-login-btn" onClick={tratarBotaoEntrar}>
+                            Entrar
+                        </button>
+                    )}
                 </div>
             </nav>
 
@@ -455,7 +503,11 @@ export function InicioPage() {
                     </button>
                 </header>
 
-                <ComposeBox onPublicar={handlePublicar} publicando={publicando} />
+                <ComposeBox 
+                    onPublicar={handlePublicar} 
+                    publicando={publicando} 
+                    usuarioLogado={usuarioLogado}
+                />
 
                 {carregando ? (
                     <SkeletonFeed />
@@ -495,6 +547,7 @@ export function InicioPage() {
                 onFechar={() => setModalAberto(false)}
                 onPublicar={handlePublicar}
                 publicando={publicando}
+                usuarioLogado={usuarioLogado}
             />
         </div>
     );

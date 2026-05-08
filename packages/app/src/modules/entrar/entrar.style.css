@@ -1,36 +1,127 @@
-/* ── Login Footer / Cadastro Link ────────────────────────── */
+/* entrar.style.css */
+@import '../../global.css';
+
+/* ── Login Container ─────────────────────────────────────── */
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  padding: 20px;
+}
+
+.login-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+.login-header {
+  margin-bottom: 32px;
+}
+
+.login-logo-title {
+  font-family: var(--font-ui);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink);
+  display: block;
+}
+
+.login-logo-sub {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--ink-dim);
+  margin-top: 5px;
+  display: block;
+}
+
+/* ── Form ────────────────────────────────────────────────── */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-field input {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.12s;
+}
+
+.login-field input:focus { border-color: var(--accent); }
+.login-field input::placeholder { color: var(--ink-dim); }
+
+.login-btn {
+  padding: 14px 24px;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.14s, transform 0.1s;
+}
+
+.login-btn:hover {
+  background: #5da07e;
+  transform: translateY(-1px);
+}
+
+/* ── Footer / Cadastro Link ──────────────────────────────── */
 .login-footer {
-    margin-top: 24px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border-light);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    flex-wrap: wrap;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .login-footer-text {
-    font-family: var(--font-ui);
-    font-size: 0.75rem;
-    color: var(--ink-dim);
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  color: var(--ink-dim);
 }
 
 .login-cadastro-link {
-    background: none;
-    border: none;
-    color: var(--accent);
-    font-family: var(--font-ui);
-    font-size: 0.75rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: color 0.12s, text-decoration 0.12s;
-    padding: 4px 8px;
-    border-radius: var(--radius);
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.12s, text-decoration 0.12s;
+  padding: 4px 8px;
+  border-radius: var(--radius);
 }
 
 .login-cadastro-link:hover {
-    color: #5da07e;
-    text-decoration: underline;
-    background: var(--accent-bg);
+  color: #5da07e;
+  text-decoration: underline;
+  background: var(--accent-bg);
 }
