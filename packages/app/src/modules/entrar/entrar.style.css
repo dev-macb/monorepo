@@ -1,0 +1,36 @@
+/* ── Login Footer / Cadastro Link ────────────────────────── */
+.login-footer {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.login-footer-text {
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    color: var(--ink-dim);
+}
+
+.login-cadastro-link {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.12s, text-decoration 0.12s;
+    padding: 4px 8px;
+    border-radius: var(--radius);
+}
+
+.login-cadastro-link:hover {
+    color: #5da07e;
+    text-decoration: underline;
+    background: var(--accent-bg);
+}

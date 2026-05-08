@@ -1,0 +1,37 @@
+# Dependências
+node_modules/
+
+# Builds
+dist/
+build/
+dist-ssr/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Cobertura de testes
+coverage/
+
+# Arquivos de lock (opcional)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Arquivos de ambiente (segredos)
+.env
+.env.local
+.env.*.local
+*.env
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Arquivos locais
+*.local
+.env
+.env.local
+.env.*.local
