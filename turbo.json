@@ -1,0 +1,24 @@
+{
+    "$schema": "https://turbo.build/schema.json",
+    "globalDependencies": ["**/.env"],
+    "tasks": {
+        "build": {
+            "dependsOn": ["^build"],
+            "outputs": ["../../dist/**"],
+            "cache": true,
+            "inputs": ["src/**", "tsconfig.json", "package.json", "nest-cli.json", "vite.config.ts"]
+        },
+        "dev": {
+            "cache": false,
+            "persistent": true,
+            "dependsOn": ["^build"]
+        },
+        "lint": {
+            "dependsOn": ["^build"]
+        },
+        "test": {
+            "dependsOn": ["build"],
+            "inputs": ["src/**", "tests/**", "tsconfig.json"]
+        }
+    }
+}

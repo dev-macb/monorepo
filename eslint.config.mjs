@@ -13,6 +13,8 @@ export default defineConfig([
         'coverage',
         'node_modules',
         '**/node_modules',
+        'apps/*/dist',
+        'apps/*/build',
         'packages/*/dist',
         'packages/*/build',
         '*.config.js',
@@ -23,7 +25,7 @@ export default defineConfig([
         '**/nest-cli.json',
     ]),
     {
-        files: ['packages/api/src/**/*.ts'],
+        files: ['apps/api/src/**/*.ts'],
         extends: [js.configs.recommended, ...tseslint.configs.recommended, eslintPluginPrettierRecommended],
         languageOptions: {
             ecmaVersion: 2020,
@@ -57,7 +59,7 @@ export default defineConfig([
         },
     },
     {
-        files: ['packages/app/src/**/*.{ts,tsx,js,jsx}'],
+        files: ['apps/web/src/**/*.{ts,tsx,js,jsx}'],
         extends: [js.configs.recommended, ...tseslint.configs.recommended, reactHooks.configs.flat?.recommended || {}, reactRefresh.configs?.vite || {}, eslintPluginPrettierRecommended],
         languageOptions: {
             ecmaVersion: 2020,
@@ -79,6 +81,37 @@ export default defineConfig([
                 },
             ],
             'no-control-regex': 'off',
+            'prettier/prettier': [
+                'error',
+                {
+                    endOfLine: 'auto',
+                    tabWidth: 4,
+                    useTabs: false,
+                },
+            ],
+        },
+    },
+    {
+        files: ['packages/contracts/src/**/*.ts'],
+        extends: [js.configs.recommended, ...tseslint.configs.recommended, eslintPluginPrettierRecommended],
+        languageOptions: {
+            ecmaVersion: 2020,
+            globals: {
+                ...globals.node,
+            },
+            sourceType: 'module',
+        },
+        rules: {
+            '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/no-unused-vars': [
+                'error',
+                {
+                    argsIgnorePattern: '^_',
+                    varsIgnorePattern: '^_',
+                    destructuredArrayIgnorePattern: '^_',
+                    caughtErrorsIgnorePattern: '^_',
+                },
+            ],
             'prettier/prettier': [
                 'error',
                 {

@@ -1,28 +1,132 @@
 services:
-    api:
+    # ==========================================
+    # Desenvolvimento (profile: dev)
+    # ==========================================
+    api-dev:
         build:
             context: .
-            dockerfile: packages/api/Dockerfile
+            dockerfile: apps/api/Dockerfile
+        container_name: monorepo-api-dev
+        ports:
+            - '3000:3000'
+        environment:
+            - NODE_ENV=development
+            - API_ENV=dev
+            - API_PORTA=3000
+            - API_CORS_ORIGENS=http://localhost:3001
+            - API_CORS_CABECALHOS=Content-Type,Authorization
+            - API_CORS_METODOS=GET,POST,PUT,PATCH,DELETE
+            - API_SAL=10
+            - API_PIMENTA=api-pimenta
+            - USUARIO_JWT=usuario-jwt
+            - USUARIO_SENHA=senha123
+            - BASE_NOME=base.sqlite
+            - DATABASE_HOST=localhost
+            - DATABASE_PORT=5432
+        volumes:
+            - ./base.sqlite:/app/base.sqlite
+        restart: unless-stopped
+        networks:
+            - app-network
+        profiles:
+            - dev
+
+    web-dev:
+        build:
+            context: .
+            dockerfile: apps/web/Dockerfile
+        container_name: monorepo-web-dev
+        ports:
+            - '3001:80'
+        environment:
+            - VITE_API_URL=http://localhost:3000
+            - APP_PORT=3001
+        depends_on:
+            - api-dev
+        restart: unless-stopped
+        networks:
+            - app-network
+        profiles:
+            - dev
+
+    # ==========================================
+    # Produção (profile: prod)
+    # ==========================================
+    postgres:
+        image: postgres:16-alpine
+        container_name: monorepo-postgres
+        environment:
+            - POSTGRES_DB=monorepo
+            - POSTGRES_USER=monorepo_user
+            - POSTGRES_PASSWORD=monorepo_password
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        ports:
+            - '5432:5432'
+        restart: unless-stopped
+        networks:
+            - app-network
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U monorepo_user -d monorepo']
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        profiles:
+            - prod
+
+    api-prod:
+        build:
+            context: .
+            dockerfile: apps/api/Dockerfile
+        container_name: monorepo-api-prod
         ports:
             - '3000:3000'
         environment:
             - NODE_ENV=production
+            - API_ENV=prod
+            - API_PORTA=3000
+            - API_CORS_ORIGENS=http://localhost
+            - API_CORS_CABECALHOS=Content-Type,Authorization
+            - API_CORS_METODOS=GET,POST,PUT,PATCH,DELETE
+            - API_SAL=10
+            - API_PIMENTA=api-pimenta-producao
+            - USUARIO_JWT=usuario-jwt-producao
+            - USUARIO_SENHA=senha123-producao
+            - DATABASE_HOST=postgres
+            - DATABASE_PORT=5432
+            - DATABASE_USER=monorepo_user
+            - DATABASE_PASSWORD=monorepo_password
+            - DATABASE_NAME=monorepo
+        depends_on:
+            postgres:
+                condition: service_healthy
         restart: unless-stopped
         networks:
             - app-network
+        profiles:
+            - prod
 
-    app:
+    web-prod:
         build:
             context: .
-            dockerfile: packages/app/Dockerfile
+            dockerfile: apps/web/Dockerfile
+        container_name: monorepo-web-prod
         ports:
             - '80:80'
+            - '443:443'
+        environment:
+            - VITE_API_URL=http://localhost:3000
         depends_on:
-            - api
+            - api-prod
         restart: unless-stopped
         networks:
             - app-network
+        profiles:
+            - prod
 
 networks:
     app-network:
         driver: bridge
+
+volumes:
+    postgres_data:

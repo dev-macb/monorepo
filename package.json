@@ -1,19 +1,22 @@
 {
     "name": "monorepo",
     "private": true,
+    "packageManager": "npm@10.9.0",
     "workspaces": {
         "packages": [
+            "apps/*",
             "packages/*"
         ]
     },
     "scripts": {
-        "dev:api": "npm run dev -w packages/api",
-        "dev:app": "npm run dev -w packages/app",
-        "build": "npm run build --workspaces",
-        "lint": "eslint . --fix",
+        "dev": "turbo dev",
+        "dev:api": "turbo dev --filter=@monorepo/api",
+        "dev:web": "turbo dev --filter=@monorepo/web",
+        "build": "turbo build",
+        "lint": "turbo lint",
+        "test": "turbo test",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
-        "test": "jest",
         "test:watch": "jest --watch",
         "test:cov": "jest --coverage"
     },
@@ -34,6 +37,7 @@
         "jest-environment-jsdom": "^30.3.0",
         "prettier": "^3.4.2",
         "ts-jest": "^29.4.9",
+        "turbo": "^2.4.4",
         "typescript": "^5.7.3",
         "typescript-eslint": "^8.20.0"
     },

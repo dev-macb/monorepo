@@ -1,0 +1,53 @@
+/* componentes/menu-lateral/menu-lateral.style.css */
+.sidebar-user-wrapper {
+    position: relative;
+}
+
+.sidebar-user {
+    cursor: pointer;
+}
+
+.menu-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+}
+
+.menu-usuario {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    margin-bottom: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    min-width: 180px;
+    z-index: 20;
+    overflow: hidden;
+}
+
+.menu-item {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    font-size: 0.875rem;
+    color: var(--ink);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.menu-item:hover {
+    background: var(--hover);
+}
+
+.menu-item-sair {
+    color: #ef4444;
+    border-top: 1px solid var(--border);
+}
