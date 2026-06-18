@@ -7,6 +7,7 @@ interface AutenticacaoContextType {
     carregando: boolean;
     isAuthenticated: boolean;
     sair: () => void;
+    definirAutenticacao: (token: string) => void;
 }
 
 const AutenticacaoContext = createContext<AutenticacaoContextType | undefined>(undefined);
@@ -36,8 +37,14 @@ function AutenticacaoProvider({ children }: { children?: React.ReactNode }) {
         JwtService.removerToken();
     };
 
+    const definirAutenticacao = (token: string) => {
+        const decoded = JwtService.decodificarToken(token);
+        setPayload(decoded);
+        JwtService.definirToken(token);
+    };
+
     return (
-        <AutenticacaoContext.Provider value={{ payload, carregando, isAuthenticated: !!payload, sair }}>
+        <AutenticacaoContext.Provider value={{ payload, carregando, isAuthenticated: !!payload, sair, definirAutenticacao }}>
             {children}
         </AutenticacaoContext.Provider>
     );

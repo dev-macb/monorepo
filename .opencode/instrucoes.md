@@ -59,7 +59,7 @@ monorepo/
 | O quê | Padrão | Exemplo |
 |-------|--------|---------|
 | Idioma geral | Português | `usuario`, `entrar`, `cadastrar` |
-| Contracts | Português | `usuario.types.ts`, `PapelUsuario` |
+| Contracts | Português | `usuario.types.ts`, `TipoUsuario` |
 | Arquivos de módulo (api) | `{entidade}.{tipo}.ts` | `usuario.controller.ts` |
 | Arquivos de módulo (web) | `{modulo}.{tipo}.tsx` | `entrar.page.tsx`, `entrar.viewmodel.ts` |
 | Componentes compartilhados | `{nome}.component.tsx` | `feed.component.tsx` |

@@ -1,0 +1,197 @@
+.feed-column {
+  flex: 1;
+  max-width: var(--feed-w);
+  min-height: 100vh;
+  border-right: 1px solid var(--border);
+}
+
+.feed-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(13, 17, 23, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+}
+
+.feed-tab {
+  flex: 1;
+  padding: 18px 0;
+  text-align: center;
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  cursor: pointer;
+  border: none;
+  background: none;
+  position: relative;
+  transition: color 0.14s;
+}
+
+.feed-tab:hover { color: var(--ink-mid); }
+.feed-tab.active { color: var(--ink); }
+.feed-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 2px;
+  background: var(--accent);
+}
+
+/* ── Compose ── */
+.compose-box {
+  display: flex;
+  gap: 14px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.compose-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--ink-mid);
+  overflow: hidden;
+}
+
+.compose-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.compose-right { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+
+.compose-textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-light);
+  outline: none;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 0.975rem;
+  resize: none;
+  line-height: 1.65;
+  padding-bottom: 10px;
+  min-height: 60px;
+  transition: border-color 0.14s;
+}
+
+.compose-textarea:focus { border-bottom-color: var(--ink-mid); }
+.compose-textarea::placeholder { color: var(--ink-faint); }
+
+.compose-tags-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.compose-tags-label {
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-right: 2px;
+}
+
+.compose-tag-chip {
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: var(--tag-bg);
+  color: var(--tag-text);
+  font-family: var(--font-ui);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: border-color 0.12s, background 0.12s, color 0.12s;
+  text-transform: uppercase;
+}
+
+.compose-tag-chip:hover {
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.compose-tag-chip.selected {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.compose-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.char-counter { font-family: var(--font-ui); font-size: 0.68rem; color: var(--ink-dim); }
+.char-counter.warning { color: #d4a500; }
+.char-counter.danger  { color: var(--like); }
+
+.compose-submit-btn {
+  padding: 8px 20px;
+  background: var(--ink);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.14s;
+}
+
+.compose-submit-btn:hover:not(:disabled) { background: var(--accent); }
+.compose-submit-btn:disabled { opacity: 0.28; cursor: not-allowed; }
+
+/* ── Empty / Error ── */
+.feed-empty {
+  padding: 64px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.feed-empty-title {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 1.35rem;
+  color: var(--ink);
+}
+
+.feed-empty-sub {
+  font-size: 0.875rem;
+  color: var(--ink-dim);
+  max-width: 260px;
+  line-height: 1.6;
+}
+
+.feed-error { padding: 40px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+
+@media (max-width: 640px) {
+    .compose-box { padding: 14px 16px; }
+}

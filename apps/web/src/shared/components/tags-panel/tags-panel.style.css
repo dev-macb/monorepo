@@ -47,3 +47,5 @@
   font-size: 0.65rem;
   color: var(--ink-dim);
 }
+
+@media (max-width: 960px) { .right-panel { display: none; } }

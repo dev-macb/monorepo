@@ -188,7 +188,7 @@ Seguir o padrão de `usuario.controller.ts`:
 ```typescript
 import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards } from '@nestjs/common';
 import { Rotas } from '../../../shared/enums/rotas.enum';
-import { PapelUsuario } from '@monorepo/contracts';
+import { TipoUsuario } from '@monorepo/contracts';
 import { UsuarioPermissoes, Publico } from '../../../shared/decorators/permissoes.decorator';
 import { UsuarioGuard } from '../../../shared/guards/usuario.guard';
 
@@ -202,19 +202,19 @@ class {Entidade}Controller {
     async obterTodos() { ... }
 
     @Get(':id')
-    @UsuarioPermissoes(PapelUsuario.ADMINISTRADOR, PapelUsuario.PADRAO)
+    @UsuarioPermissoes(TipoUsuario.ADMINISTRADOR, TipoUsuario.PADRAO)
     async obterPorId(@Param('id') id: number) { ... }
 
     @Post()
-    @UsuarioPermissoes(PapelUsuario.ADMINISTRADOR)
+    @UsuarioPermissoes(TipoUsuario.ADMINISTRADOR)
     async criar(@Body() dto: Criar{Entidade}Dto) { ... }
 
     @Patch(':id')
-    @UsuarioPermissoes(PapelUsuario.ADMINISTRADOR, PapelUsuario.PADRAO)
+    @UsuarioPermissoes(TipoUsuario.ADMINISTRADOR, TipoUsuario.PADRAO)
     async atualizar(@Param('id') id: number, @Body() dto: Atualizar{Entidade}Dto) { ... }
 
     @Delete(':id')
-    @UsuarioPermissoes(PapelUsuario.ADMINISTRADOR)
+    @UsuarioPermissoes(TipoUsuario.ADMINISTRADOR)
     async remover(@Param('id') id: number) { ... }
 }
 

@@ -1,4 +1,4 @@
-export { PapelUsuario } from './enums/papeis-usuario.enum';
+export { TipoUsuario } from './enums/tipo-usuario.enum.js';
 
 export type {
     Usuario,
@@ -9,8 +9,8 @@ export type {
     EntrarUsuarioResponse,
     FiltrosUsuarioRequest,
     TokenPayload,
-} from './types/usuario.types';
+} from './types/usuario.types.js';
 
-export type { Postagem, PostagemFeed, CriarPostagemRequest, AtualizarPostagemRequest } from './types/postagem.types';
+export type { Postagem, PostagemFeed, CriarPostagemRequest, AtualizarPostagemRequest } from './types/postagem.types.js';
 
-export type { OlaMundoResponse } from './types/api.types';
+export type { OlaMundoResponse } from './types/api.types.js';

@@ -1,4 +1,4 @@
-export enum PapelUsuario {
+export enum TipoUsuario {
     ADMINISTRADOR = 0,
     PADRAO = 1,
 }

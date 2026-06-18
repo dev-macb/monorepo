@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, UnauthorizedException, NotFoundException, ConflictException, UseGuards, InternalServerErrorException, Query } from '@nestjs/common';
-import { PapelUsuario } from '@monorepo/contracts';
+import { TipoUsuario } from '@monorepo/contracts';
 import { Rotas } from '../../shared/enums/rotas.enum';
 import { UsuarioService } from './usuario.service';
 import { FiltrosUsuarioDto } from './dtos/filtros-usuario.dto';
@@ -17,7 +17,7 @@ class UsuarioController {
     constructor(
         private readonly jwtService: JwtService,
         private readonly usuarioService: UsuarioService
-    ) {}
+    ) { }
 
     @Publico()
     @Post('entrar')
@@ -55,15 +55,27 @@ class UsuarioController {
         return usuarioSemSenha;
     }
 
+    @Patch(':id/desativar')
+    @HttpCode(200)
+    @UsuarioPermissoes(TipoUsuario.ADMINISTRADOR, TipoUsuario.PADRAO)
+    async desativarConta(@Param('id') id: number): Promise<{ message: string }> {
+        const usuario = await this.usuarioService.desativarConta(id);
+        if (!usuario) {
+            throw new NotFoundException('Usuário inexistente');
+        }
+
+        return { message: 'Conta desativada com sucesso' };
+    }
+
     @Get()
-    @UsuarioPermissoes(PapelUsuario.ADMINISTRADOR, PapelUsuario.PADRAO)
+    @UsuarioPermissoes(TipoUsuario.ADMINISTRADOR, TipoUsuario.PADRAO)
     async obterTodos(@Query() filtros?: FiltrosUsuarioDto): Promise<Omit<Usuario, 'senha'>[]> {
         const usuarios = await this.usuarioService.obterTodos(filtros);
         return usuarios.map(({ senha: _, ...usuarioSemSenha }) => usuarioSemSenha);
     }
 
     @Get(':id')
-    @UsuarioPermissoes(PapelUsuario.ADMINISTRADOR, PapelUsuario.PADRAO)
+    @UsuarioPermissoes(TipoUsuario.ADMINISTRADOR, TipoUsuario.PADRAO)
     async obterPorId(@Param('id') id: number): Promise<Omit<Usuario, 'senha'>> {
         const usuario = await this.usuarioService.obterPorId(id);
         if (!usuario) {
@@ -76,7 +88,7 @@ class UsuarioController {
     }
 
     @Post()
-    @UsuarioPermissoes(PapelUsuario.ADMINISTRADOR)
+    @UsuarioPermissoes(TipoUsuario.ADMINISTRADOR)
     async cadastrar(@Body() dto: CadastrarUsuarioDto): Promise<Omit<Usuario, 'senha'>> {
         const novoUsuario = await this.usuarioService.cadastrar(dto);
         if (!novoUsuario) {
@@ -89,7 +101,7 @@ class UsuarioController {
     }
 
     @Patch(':id')
-    @UsuarioPermissoes(PapelUsuario.ADMINISTRADOR, PapelUsuario.PADRAO)
+    @UsuarioPermissoes(TipoUsuario.ADMINISTRADOR, TipoUsuario.PADRAO)
     async atualizar(@Param('id') id: number, @Body() dto: AtualizarUsuarioDto): Promise<Omit<Usuario, 'senha'>> {
         const usuarioAtualizado = await this.usuarioService.atualizar(id, dto);
         if (!usuarioAtualizado) {
@@ -103,7 +115,7 @@ class UsuarioController {
 
     @Delete(':id')
     @HttpCode(204)
-    @UsuarioPermissoes(PapelUsuario.ADMINISTRADOR)
+    @UsuarioPermissoes(TipoUsuario.ADMINISTRADOR)
     async remover(@Param('id') id: number): Promise<void> {
         const usuario = await this.usuarioService.remover(id);
         if (!usuario) {

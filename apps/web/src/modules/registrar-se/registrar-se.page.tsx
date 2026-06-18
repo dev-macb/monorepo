@@ -1,17 +1,18 @@
-import './registrar-se.style.css';
 import { useNavigate } from 'react-router-dom';
 import { usaDependencias } from '../../shared/di/container';
+import { usaAutenticacao } from '../../shared/contexts/autenticacao.context';
 import { usaRegistrarSeViewModel } from './registrar-se.viewmodel';
 
 function RegistrarSePage() {
     const navigate = useNavigate();
     const { usuarioRepository } = usaDependencias();
+    const { definirAutenticacao } = usaAutenticacao();
     const {
         nome, email, senha, confirmarSenha,
         mensagemErro, carregando,
         definirNome, definirEmail, definirSenha, definirConfirmarSenha,
         registrar,
-    } = usaRegistrarSeViewModel(usuarioRepository);
+    } = usaRegistrarSeViewModel(usuarioRepository, definirAutenticacao);
 
     const tratarRegistrarSe = async (evento: React.FormEvent) => {
         evento.preventDefault();

@@ -1,8 +1,8 @@
-import { PapelUsuario } from '../enums/papeis-usuario.enum';
+import { TipoUsuario } from '../enums/tipo-usuario.enum.js';
 
 export interface Usuario {
     id: number;
-    tipo: PapelUsuario;
+    tipo: TipoUsuario;
     nomeCompleto: string;
     email: string;
     senha: string;
@@ -11,10 +11,10 @@ export interface Usuario {
     atualizadoEm: string;
 }
 
-export interface UsuarioSemSenha extends Omit<Usuario, 'senha'> {}
+export interface UsuarioSemSenha extends Omit<Usuario, 'senha'> { }
 
 export interface CadastrarUsuarioRequest {
-    tipo?: PapelUsuario;
+    tipo?: TipoUsuario;
     nomeCompleto: string;
     email: string;
     senha: string;
@@ -37,7 +37,7 @@ export interface EntrarUsuarioResponse {
 export interface FiltrosUsuarioRequest {
     nomeCompleto?: string;
     email?: string;
-    tipo?: PapelUsuario;
+    tipo?: TipoUsuario;
     ativo?: boolean;
 }
 

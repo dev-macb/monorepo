@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { UsuarioRepositoryInterface } from '../../../interfaces/usuario-repository.interface';
-import type { Usuario } from '../../../models';
+import type { UsuarioRepositoryInterface } from '../../../shared/interfaces/usuario-repository.interface';
+import type { Usuario } from '../../../shared/models';
 
-export function usaProfileDialogViewModel(
-    userRepository: UsuarioRepositoryInterface,
+export function usaPerfilDialogViewModel(
+    usuarioRepository: UsuarioRepositoryInterface,
     user: Usuario | null,
     onUpdate: (user: Usuario) => void,
     onClose: () => void,
+    onDelete: () => void,
 ) {
     const [editando, setEditando] = useState(false);
     const [formData, setFormData] = useState<Partial<Usuario>>({});
@@ -56,7 +57,7 @@ export function usaProfileDialogViewModel(
         setError(null);
 
         try {
-            const updatedUser = await userRepository.update(user.id, {
+            const updatedUser = await usuarioRepository.atualizar(user.id, {
                 nomeCompleto: formData.nomeCompleto.trim(),
                 email: formData.email.trim(),
             });
@@ -68,7 +69,25 @@ export function usaProfileDialogViewModel(
         } finally {
             setLoading(false);
         }
-    }, [formData, user, userRepository, onUpdate, onClose]);
+    }, [formData, user, usuarioRepository, onUpdate, onClose]);
+
+    const excluir = useCallback(async () => {
+        if (!user) return;
+        if (!window.confirm('Tem certeza que deseja desativar seu perfil? Você não poderá mais fazer login.')) return;
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            await usuarioRepository.desativar(user.id);
+            onClose();
+            onDelete();
+        } catch {
+            setError('Erro ao desativar conta. Tente novamente.');
+        } finally {
+            setLoading(false);
+        }
+    }, [user, usuarioRepository, onClose, onDelete]);
 
     return {
         editando,
@@ -79,5 +98,6 @@ export function usaProfileDialogViewModel(
         manipularAlterarCampo,
         save,
         cancel,
+        excluir,
     };
 }

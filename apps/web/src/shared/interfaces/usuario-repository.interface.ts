@@ -7,6 +7,7 @@ interface UsuarioRepositoryInterface {
     cadastrar(dados: CadastrarUsuarioRequest): Promise<User>;
     atualizar(id: number, dados: AtualizarUsuarioRequest): Promise<User>;
     remover(id: number): Promise<void>;
+    desativar(id: number): Promise<void>;
     entrar(email: string, senha: string): Promise<string>;
     registrarSe(dados: CadastrarUsuarioRequest): Promise<User>;
 }

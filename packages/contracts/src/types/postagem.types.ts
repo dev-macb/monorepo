@@ -1,4 +1,4 @@
-import { Usuario } from './usuario.types';
+import { Usuario } from './usuario.types.js';
 
 export interface Postagem {
     id: number;

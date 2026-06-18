@@ -104,7 +104,7 @@ monorepo/
 │           │   ├── postagem.types.ts
 │           │   └── api.types.ts
 │           └── enums/
-│               └── papeis-usuario.enum.ts
+│               └── tipo-usuario.enum.ts
 │
 ├── docker/                            # Infraestrutura
 │   └── nginx/                         # Proxy reverso
@@ -147,7 +147,7 @@ apps/web ──HTTP──► apps/api
 | Código (Web) | Português | `entrar`, `inicio`, `usaDependencias` |
 | Arquivos (API) | Português | `usuario.controller.ts` |
 | Arquivos (Web) | Português | `entrar.page.tsx` |
-| Contracts | Português | `usuario.types.ts`, `PapelUsuario` |
+| Contracts | Português | `usuario.types.ts`, `TipoUsuario` |
 | Mensagens/erros | Português | `'Preencha todos os campos'` |
 | Commits | Português | `feat: adiciona módulo de postagens` |
 | Componentes compartilhados | Inglês | `feed.component.tsx` (convenção técnica) |
@@ -196,7 +196,7 @@ apps/web ──HTTP──► apps/api
 | Tipos de usuário | `usuario.types.ts` | `Usuario`, `TokenPayload` |
 | Tipos de postagem | `postagem.types.ts` | `Postagem`, `CriarPostagemRequest` |
 | Tipos de API | `api.types.ts` | `OlaMundoResponse` |
-| Enum de papéis | `papeis-usuario.enum.ts` | `PapelUsuario.ADMINISTRADOR` |
+| Enum de papéis | `tipo-usuario.enum.ts` | `TipoUsuario.ADMINISTRADOR` |
 | Arquivo barrel | `index.ts` | Re-exports de tudo |
 
 ---
@@ -223,7 +223,7 @@ src/modules/{dominio}/
 ```typescript
 import { IsString, MinLength, MaxLength, IsEmail, IsOptional, IsEnum } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { PapelUsuario } from '@monorepo/contracts';
+import { TipoUsuario } from '@monorepo/contracts';
 
 class CadastrarUsuarioDto {
     @IsString()
@@ -241,8 +241,8 @@ class CadastrarUsuarioDto {
     senha!: string;
 
     @IsOptional()
-    @IsEnum(PapelUsuario)
-    tipo?: PapelUsuario;
+    @IsEnum(TipoUsuario)
+    tipo?: TipoUsuario;
 }
 
 class AtualizarUsuarioDto extends PartialType(CadastrarUsuarioDto) {}
@@ -260,7 +260,7 @@ Regras:
 ```typescript
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { PapelUsuario } from '@monorepo/contracts';
+import { TipoUsuario } from '@monorepo/contracts';
 import { Tabelas } from '../../../shared/enums/tabelas.enum';
 
 @Entity(Tabelas.USUARIOS)
@@ -268,8 +268,8 @@ class Usuario {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ enum: PapelUsuario, default: PapelUsuario.PADRAO })
-    tipo: PapelUsuario;
+    @Column({ enum: TipoUsuario, default: TipoUsuario.PADRAO })
+    tipo: TipoUsuario;
 
     @Column({ name: 'nome_completo', unique: true })
     nomeCompleto: string;
@@ -333,7 +333,7 @@ import { Controller, Get, Post, Body, Param, Query, Patch, Delete, UseGuards, Ht
 import { UsuarioPermissoes, Publico } from '../../../shared/decorators/permissoes.decorator';
 import { UsuarioGuard } from '../../../shared/guards/usuario.guard';
 import { Rotas } from '../../../shared/enums/rotas.enum';
-import { PapelUsuario } from '@monorepo/contracts';
+import { TipoUsuario } from '@monorepo/contracts';
 
 @Controller(Rotas.USUARIOS)
 @UseGuards(UsuarioGuard)
@@ -345,23 +345,23 @@ class UsuarioController {
     async entrar(@Body() dto: EntrarUsuarioDto) { ... }
 
     @Get()
-    @UsuarioPermissoes(PapelUsuario.ADMINISTRADOR, PapelUsuario.PADRAO)
+    @UsuarioPermissoes(TipoUsuario.ADMINISTRADOR, TipoUsuario.PADRAO)
     async obterTodos(@Query() filtros?: FiltrosUsuarioDto) { ... }
 
     @Get(':id')
-    @UsuarioPermissoes(PapelUsuario.ADMINISTRADOR, PapelUsuario.PADRAO)
+    @UsuarioPermissoes(TipoUsuario.ADMINISTRADOR, TipoUsuario.PADRAO)
     async obterPorId(@Param('id') id: number) { ... }
 
     @Post()
-    @UsuarioPermissoes(PapelUsuario.ADMINISTRADOR)
+    @UsuarioPermissoes(TipoUsuario.ADMINISTRADOR)
     async cadastrar(@Body() dto: CadastrarUsuarioDto) { ... }
 
     @Patch(':id')
-    @UsuarioPermissoes(PapelUsuario.ADMINISTRADOR, PapelUsuario.PADRAO)
+    @UsuarioPermissoes(TipoUsuario.ADMINISTRADOR, TipoUsuario.PADRAO)
     async atualizar(@Param('id') id: number, @Body() dto: AtualizarUsuarioDto) { ... }
 
     @Delete(':id')
-    @UsuarioPermissoes(PapelUsuario.ADMINISTRADOR)
+    @UsuarioPermissoes(TipoUsuario.ADMINISTRADOR)
     async remover(@Param('id') id: number) { ... }
 }
 ```
@@ -623,18 +623,18 @@ interface Usuario {
     id: number;
     nomeCompleto: string;
     email: string;
-    tipo: PapelUsuario;
+    tipo: TipoUsuario;
     ativo: boolean;
     criadoEm: Date;
     atualizadoEm: Date;
 }
 
 interface UsuarioSemSenha extends Omit<Usuario, 'senha'> {}
-interface CadastrarUsuarioRequest { nomeCompleto: string; email: string; senha: string; tipo?: PapelUsuario; }
+interface CadastrarUsuarioRequest { nomeCompleto: string; email: string; senha: string; tipo?: TipoUsuario; }
 interface AtualizarUsuarioRequest extends Partial<Omit<CadastrarUsuarioRequest, 'email'>> {}
 interface EntrarUsuarioRequest { email: string; senha: string; }
 interface EntrarUsuarioResponse { token_usuario: string; }
-interface FiltrosUsuarioRequest { nome?: string; tipo?: PapelUsuario; ativo?: boolean; }
+interface FiltrosUsuarioRequest { nome?: string; tipo?: TipoUsuario; ativo?: boolean; }
 interface TokenPayload { idUsuario: number; tipoUsuario: number; }
 ```
 
@@ -651,8 +651,8 @@ interface AtualizarPostagemRequest { conteudo?: string; tags?: string[]; }
 ### 6.3 Enums
 
 ```typescript
-// packages/contracts/src/enums/papeis-usuario.enum.ts
-enum PapelUsuario {
+// packages/contracts/src/enums/tipo-usuario.enum.ts
+enum TipoUsuario {
     ADMINISTRADOR = 0,
     PADRAO = 1,
 }
@@ -662,11 +662,11 @@ enum PapelUsuario {
 
 ```typescript
 // No backend (NestJS)
-import { Usuario, PapelUsuario, TokenPayload } from '@monorepo/contracts';
+import { Usuario, TipoUsuario, TokenPayload } from '@monorepo/contracts';
 
 // No frontend (React) — type-only import para não bundlar
 import type { Usuario, TokenPayload } from '@monorepo/contracts';
-import { PapelUsuario } from '@monorepo/contracts'; // enum precisa de value import
+import { TipoUsuario } from '@monorepo/contracts'; // enum precisa de value import
 ```
 
 ### 6.5 package.json (exports)
@@ -681,7 +681,7 @@ import { PapelUsuario } from '@monorepo/contracts'; // enum precisa de value imp
         "./types/usuario": "./src/types/usuario.types.ts",
         "./types/postagem": "./src/types/postagem.types.ts",
         "./types/api": "./src/types/api.types.ts",
-        "./enums/papeis-usuario": "./src/enums/papeis-usuario.enum.ts"
+        "./enums/papeis-usuario": "./src/enums/tipo-usuario.enum.ts"
     }
 }
 ```
@@ -747,7 +747,7 @@ Regras:
 - `UsuarioStrategy`: Passport JWT strategy que extrai token do header `Authorization: Bearer`
 - `UsuarioGuard`: Guard que verifica JWT e permissões
 - `@Publico()`: decorator para rotas públicas (login, registro)
-- `@UsuarioPermissoes(PapelUsuario.ADMINISTRADOR)`: restringe por papel
+- `@UsuarioPermissoes(TipoUsuario.ADMINISTRADOR)`: restringe por papel
 
 ### 8.3 Frontend
 
@@ -879,7 +879,7 @@ Exemplos:
 ```
 feat: adiciona módulo de postagens
 fix: corrige validação de email no cadastro
-refactor: renomeia UsuarioRole para PapelUsuario
+refactor: renomeia UsuarioRole para TipoUsuario
 docs: adiciona seção de CSS conventions
 ```
 

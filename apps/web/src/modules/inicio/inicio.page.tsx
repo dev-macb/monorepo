@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { usaDependencias } from '../../shared/di/container';
 import { usaAutenticacao } from '../../shared/contexts/autenticacao.context';
 import { usaInicioViewModel } from './inicio.viewmodel';
-import { ProfileDialog } from '../../shared/components/dialogs/user-profile/user-profile.dialog';
+import { PerfilDialog } from './dialogs/perfil-dialog';
 import { TagsPanel } from '../../shared/components/tags-panel/tags-panel.component';
 import { Sidebar } from '../../shared/components/sidebar/sidebar.component';
 import { Feed } from '../../shared/components/feed/feed.component';
@@ -56,11 +56,12 @@ function InicioPage() {
                 onSelect={() => { }}
             />
 
-            <ProfileDialog
-                user={usuarioAtual}
+            <PerfilDialog
+                usuario={usuarioAtual}
                 aberto={mostrarPerfil}
                 onClose={fecharPerfil}
                 onUpdate={atualizarUsuario}
+                onDelete={sair}
             />
         </div>
     );

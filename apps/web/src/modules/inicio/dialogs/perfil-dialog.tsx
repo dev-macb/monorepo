@@ -1,17 +1,18 @@
-import './user-profile.style.css';
-import { usaDependencias } from '../../../di/container';
-import { usaProfileDialogViewModel } from './user-profile.viewmodel';
-import type { Usuario } from '../../../models';
+import './perfil-dialog.style.css';
+import { usaDependencias } from '../../../shared/di/container';
+import type { Usuario } from '../../../shared/models';
+import { usaPerfilDialogViewModel } from './perfil-dialog.viewmodel';
 
-interface ProfileDialogProps {
-    user: Usuario | null;
+interface PerfilDialogProps {
+    usuario: Usuario | null;
     aberto: boolean;
     onClose: () => void;
     onUpdate: (updatedUser: Usuario) => void;
+    onDelete: () => void;
 }
 
-export function ProfileDialog({ user, aberto, onClose, onUpdate }: ProfileDialogProps) {
-    const { userRepository } = usaDependencias();
+export function PerfilDialog({ usuario, aberto, onClose, onUpdate, onDelete }: PerfilDialogProps) {
+    const { usuarioRepository } = usaDependencias();
     const {
         editando,
         formData,
@@ -21,15 +22,10 @@ export function ProfileDialog({ user, aberto, onClose, onUpdate }: ProfileDialog
         manipularAlterarCampo,
         save,
         cancel,
-    } = usaProfileDialogViewModel(userRepository, user, onUpdate, onClose);
+        excluir,
+    } = usaPerfilDialogViewModel(usuarioRepository, usuario, onUpdate, onClose, onDelete);
 
-    if (!aberto || !user) return null;
-
-    const handleDelete = () => {
-        if (window.confirm('Tem certeza que deseja remover seu perfil? Esta ação não pode ser desfeita.')) {
-            onClose();
-        }
-    };
+    if (!aberto || !usuario) return null;
 
     const formatDate = (data?: string) => {
         if (!data) return 'Não informada';
@@ -49,14 +45,16 @@ export function ProfileDialog({ user, aberto, onClose, onUpdate }: ProfileDialog
                         <button
                             className={`perfil-icon-btn ${editando ? 'perfil-icon-btn-ativo' : ''}`}
                             onClick={alternarEdicao}
+                            disabled={loading}
                         >
                             Editar
                         </button>
                         <button
                             className="perfil-icon-btn perfil-icon-btn-remover"
-                            onClick={handleDelete}
+                            onClick={excluir}
+                            disabled={loading}
                         >
-                            Excluir
+                            {loading ? 'Excluindo...' : 'Excluir'}
                         </button>
                     </div>
                 </div>
@@ -64,7 +62,7 @@ export function ProfileDialog({ user, aberto, onClose, onUpdate }: ProfileDialog
                 <div className="perfil-content">
                     <div className="perfil-avatar-container">
                         <div className="perfil-avatar-grande">
-                            {user.nomeCompleto?.[0]?.toUpperCase() || '?'}
+                            {usuario.nomeCompleto?.[0]?.toUpperCase() || '?'}
                         </div>
                     </div>
 
@@ -98,11 +96,11 @@ export function ProfileDialog({ user, aberto, onClose, onUpdate }: ProfileDialog
                         <div className="perfil-datas">
                             <div className="perfil-data-item">
                                 <span className="perfil-data-label">Membro desde</span>
-                                <span className="perfil-data-valor">{formatDate(user.criadoEm)}</span>
+                                <span className="perfil-data-valor">{formatDate(usuario.criadoEm)}</span>
                             </div>
                             <div className="perfil-data-item">
                                 <span className="perfil-data-label">Última atualização</span>
-                                <span className="perfil-data-valor">{formatDate(user.atualizadoEm)}</span>
+                                <span className="perfil-data-valor">{formatDate(usuario.atualizadoEm)}</span>
                             </div>
                         </div>
 

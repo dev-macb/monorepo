@@ -1,11 +1,11 @@
 import { Transform } from 'class-transformer';
 import { IsBoolean, IsEmail, IsEnum, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
-import { PapelUsuario } from '@monorepo/contracts';
+import { TipoUsuario } from '@monorepo/contracts';
 
 class CadastrarUsuarioDto {
-    @IsEnum(PapelUsuario, { message: 'Tipo de usuário inválido' })
+    @IsEnum(TipoUsuario, { message: 'Tipo de usuário inválido' })
     @IsOptional()
-    tipo?: PapelUsuario;
+    tipo?: TipoUsuario;
 
     @IsString()
     @MinLength(3, { message: 'O nome deve ter no mínimo 3 caracteres' })

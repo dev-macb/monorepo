@@ -24,6 +24,10 @@ class UsuarioRepository implements UsuarioRepositoryInterface {
         await api.delete(`usuarios/${id}`);
     }
 
+    async desativar(id: number): Promise<void> {
+        await api.patch(`usuarios/${id}/desativar`);
+    }
+
     async entrar(email: string, senha: string): Promise<string> {
         const resposta = await api.post<{ token_usuario: string }>('/usuarios/entrar', { email, senha });
         return resposta.token_usuario;

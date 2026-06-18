@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import type { UsuarioRepositoryInterface } from '../../shared/interfaces/usuario-repository.interface';
 import type { CadastrarUsuarioRequest } from '../../shared/models';
-import { JwtService } from '../../shared/services/jwt.service';
 
-function usaRegistrarSeViewModel(usuarioRepository: UsuarioRepositoryInterface) {
+function usaRegistrarSeViewModel(usuarioRepository: UsuarioRepositoryInterface, definirAutenticacao: (token: string) => void) {
     const [nome, definirNome] = useState('');
     const [email, definirEmail] = useState('');
     const [senha, definirSenha] = useState('');
@@ -46,7 +45,7 @@ function usaRegistrarSeViewModel(usuarioRepository: UsuarioRepositoryInterface) 
             await usuarioRepository.registrarSe(dados);
 
             const token = await usuarioRepository.entrar(email, senha);
-            JwtService.definirToken(token);
+            definirAutenticacao(token);
 
             onSuccess();
         } catch (error: any) {

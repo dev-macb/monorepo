@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import type { UsuarioRepositoryInterface } from '../../shared/interfaces/usuario-repository.interface';
-import { JwtService } from '../../shared/services/jwt.service';
 
-function usaEntrarViewModel(usuarioRepository: UsuarioRepositoryInterface) {
+function usaEntrarViewModel(usuarioRepository: UsuarioRepositoryInterface, definirAutenticacao: (token: string) => void) {
     const [email, definirEmail] = useState('');
     const [senha, definirSenha] = useState('');
     const [mensagemErro, definirMensagemErro] = useState('');
@@ -19,7 +18,7 @@ function usaEntrarViewModel(usuarioRepository: UsuarioRepositoryInterface) {
 
         try {
             const tokenUsuario = await usuarioRepository.entrar(email, senha);
-            JwtService.definirToken(tokenUsuario);
+            definirAutenticacao(tokenUsuario);
             onSuccess();
         } catch (error: any) {
             const mensagem = error.response?.data?.message

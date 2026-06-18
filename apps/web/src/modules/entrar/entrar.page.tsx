@@ -1,11 +1,13 @@
 import './entrar.style.css';
 import { useNavigate } from "react-router-dom";
 import { usaDependencias } from "../../shared/di/container";
+import { usaAutenticacao } from "../../shared/contexts/autenticacao.context";
 import { usaEntrarViewModel } from "./entrar.viewmodel";
 
 function EntrarPage() {
     const navigate = useNavigate();
     const { usuarioRepository } = usaDependencias();
+    const { definirAutenticacao } = usaAutenticacao();
     const { 
         email, 
         senha, 
@@ -14,7 +16,7 @@ function EntrarPage() {
         definirEmail, 
         definirSenha, 
         login 
-    } = usaEntrarViewModel(usuarioRepository);
+    } = usaEntrarViewModel(usuarioRepository, definirAutenticacao);
 
     const tratarLogin = async (evento: React.FormEvent) => {
         evento.preventDefault();

@@ -2,7 +2,7 @@ import { ExecutionContext, ForbiddenException, Injectable, UnauthorizedException
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { PUBLICO } from '../decorators/permissoes.decorator';
-import { PapelUsuario } from '@monorepo/contracts';
+import { TipoUsuario } from '@monorepo/contracts';
 import { USUARIO_PERMISSOES } from '../decorators/permissoes.decorator';
 
 @Injectable()
@@ -30,7 +30,7 @@ export class UsuarioGuard extends AuthGuard('usuario-jwt') {
             throw new UnauthorizedException('Usuário não autenticado');
         }
 
-        const permissoesRequeridas = this.reflector.get<PapelUsuario[]>(USUARIO_PERMISSOES, context.getHandler());
+        const permissoesRequeridas = this.reflector.get<TipoUsuario[]>(USUARIO_PERMISSOES, context.getHandler());
 
         if (!permissoesRequeridas || permissoesRequeridas.length === 0) {
             return true;

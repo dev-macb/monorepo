@@ -1,6 +1,6 @@
 import { Exclude } from 'class-transformer';
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { PapelUsuario } from '@monorepo/contracts';
+import { TipoUsuario } from '@monorepo/contracts';
 import { Tabelas } from '../../../shared/enums/tabelas.enum';
 
 @Entity(Tabelas.USUARIOS)
@@ -8,8 +8,8 @@ class Usuario {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ enum: PapelUsuario, default: PapelUsuario.PADRAO })
-    tipo: PapelUsuario;
+    @Column({ enum: TipoUsuario, default: TipoUsuario.PADRAO })
+    tipo: TipoUsuario;
 
     @Column({ name: 'nome_completo', unique: true })
     nomeCompleto: string;

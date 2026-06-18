@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsOptional, IsBoolean, IsString, MinLength, IsEmail, IsEnum } from 'class-validator';
-import { PapelUsuario } from '@monorepo/contracts';
+import { TipoUsuario } from '@monorepo/contracts';
 
 class FiltrosUsuarioDto {
     @IsOptional()
@@ -13,8 +13,8 @@ class FiltrosUsuarioDto {
     email?: string;
 
     @IsOptional()
-    @IsEnum(PapelUsuario, { message: 'Tipo de usuário inválido' })
-    tipo?: PapelUsuario;
+    @IsEnum(TipoUsuario, { message: 'Tipo de usuário inválido' })
+    tipo?: TipoUsuario;
 
     @IsOptional()
     @Type(() => Boolean)

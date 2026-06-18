@@ -33,7 +33,7 @@ Authorization: Bearer <token_usuario>
 
 ### remover
 DELETE  http://localhost:3000/usuarios/2
-Authorization: Bearer <token_usuario>
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZFVzdWFyaW8iOjEsInRpcG9Vc3VhcmlvIjowLCJpYXQiOjE3ODE4MTUxMjcsImV4cCI6MTc4MTgxODcyN30.5i_ezBpi91hw6WNFyRW1Q6jN1SzgyAq3-f5ZBboVEjI
 
 
 ### entrar

@@ -117,6 +117,16 @@ class UsuarioService {
 
         return usuario;
     }
+
+    async desativarConta(id: number): Promise<Usuario | null> {
+        const usuario = await this.obterPorId(id);
+        if (!usuario) {
+            return null;
+        }
+
+        usuario.ativo = false;
+        return await this.repositorio.save(usuario);
+    }
 }
 
 export { UsuarioService };
