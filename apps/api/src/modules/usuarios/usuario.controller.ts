@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, UnauthorizedException, NotFoundException, UseGuards, InternalServerErrorException, Query } from '@nestjs/common';
-import { Usuarios } from '../../shared/enums/usuarios.enum';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, UnauthorizedException, NotFoundException, ConflictException, UseGuards, InternalServerErrorException, Query } from '@nestjs/common';
+import { PapelUsuario } from '@monorepo/contracts';
 import { Rotas } from '../../shared/enums/rotas.enum';
 import { UsuarioService } from './usuario.service';
 import { FiltrosUsuarioDto } from './dtos/filtros-usuario.dto';
@@ -11,6 +11,7 @@ import { Publico, UsuarioPermissoes } from '../../shared/decorators/permissoes.d
 import { AtualizarUsuarioDto } from './dtos/atualizar-usuario.dto';
 import { UsuarioGuard } from '../../shared/guards/usuario.guard';
 
+@UseGuards(UsuarioGuard)
 @Controller(Rotas.USUARIOS)
 class UsuarioController {
     constructor(
@@ -18,87 +19,96 @@ class UsuarioController {
         private readonly usuarioService: UsuarioService
     ) {}
 
-    @Get()
-    @UseGuards(UsuarioGuard)
-    @UsuarioPermissoes(Usuarios.ADMINISTRADOR, Usuarios.PADRAO)
-    async obterTodos(@Query() filtros?: FiltrosUsuarioDto): Promise<Omit<Usuario, 'senha'>[]> {
-        const administradores = await this.usuarioService.obterTodos(filtros);
-        return administradores.map(({ senha: _, ...administradoresSemSenha }) => administradoresSemSenha);
-    }
-
-    @Get(':id')
-    @UseGuards(UsuarioGuard)
-    @UsuarioPermissoes(Usuarios.ADMINISTRADOR, Usuarios.PADRAO)
-    async obterPorId(@Param('id') id: number): Promise<Omit<Usuario, 'senha'> | null> {
-        const administrador = await this.usuarioService.obterPorId(id);
-        if (!administrador) {
-            throw new NotFoundException('Usuario inexistente');
-        }
-
-        const { senha: _, ...administradorSemSenha } = administrador;
-
-        return administradorSemSenha;
-    }
-
-    @Post()
-    @UseGuards(UsuarioGuard)
-    @UsuarioPermissoes(Usuarios.ADMINISTRADOR, Usuarios.PADRAO)
-    async cadastrar(@Body() dto: CadastrarUsuarioDto): Promise<Omit<Usuario, 'senha'>> {
-        const novoUsuario = await this.usuarioService.cadastrar(dto);
-        if (!novoUsuario) {
-            throw new InternalServerErrorException('Erro ao cadastrar usuário');
-        }
-
-        const { senha: _, ...administradorSemSenha } = novoUsuario;
-
-        return administradorSemSenha;
-    }
-
-    @Patch(':id')
-    @UseGuards(UsuarioGuard)
-    @UsuarioPermissoes(Usuarios.ADMINISTRADOR, Usuarios.PADRAO)
-    async atualizar(@Param('id') id: number, @Body() dto: AtualizarUsuarioDto): Promise<Omit<Usuario, 'senha'>> {
-        const administradorAtualizado = await this.usuarioService.atualizar(id, dto);
-        if (!administradorAtualizado) {
-            throw new NotFoundException('Usuario inexistente');
-        }
-
-        const { senha: _, ...administradorSemSenha } = administradorAtualizado;
-
-        return administradorSemSenha;
-    }
-
-    @Delete(':id')
-    @HttpCode(204)
-    @UseGuards(UsuarioGuard)
-    @UsuarioPermissoes(Usuarios.ADMINISTRADOR)
-    async remover(@Param('id') id: number): Promise<void> {
-        const administrador = await this.usuarioService.remover(id);
-        if (!administrador) {
-            throw new NotFoundException('Usuario inexistente');
-        }
-    }
-
     @Publico()
     @Post('entrar')
     @HttpCode(200)
     async entrar(@Body() dto: EntrarUsuarioDto): Promise<{ token_usuario: string }> {
-        const administrador = await this.usuarioService.entrar(dto);
-        if (!administrador) {
-            throw new UnauthorizedException('Credenciais Inválidas');
+        const usuario = await this.usuarioService.entrar(dto);
+        if (!usuario) {
+            throw new UnauthorizedException('Credenciais inválidas');
         }
 
-        if (!administrador.ativo) {
-            throw new UnauthorizedException('Usuario Inativo');
+        if (!usuario.ativo) {
+            throw new UnauthorizedException('Usuário inativo');
         }
 
         const payload = {
-            idUsuario: administrador.id,
-            tipoUsuario: administrador.tipo,
+            idUsuario: usuario.id,
+            tipoUsuario: usuario.tipo,
         };
         const token = this.jwtService.sign(payload);
 
         return { token_usuario: token };
+    }
+
+    @Publico()
+    @Post('registrar-se')
+    @HttpCode(201)
+    async registrarSe(@Body() dto: CadastrarUsuarioDto): Promise<Omit<Usuario, 'senha'>> {
+        const novoUsuario = await this.usuarioService.cadastrar(dto);
+        if (!novoUsuario) {
+            throw new ConflictException('Este e-mail já está em uso');
+        }
+
+        const { senha: _, ...usuarioSemSenha } = novoUsuario;
+
+        return usuarioSemSenha;
+    }
+
+    @Get()
+    @UsuarioPermissoes(PapelUsuario.ADMINISTRADOR, PapelUsuario.PADRAO)
+    async obterTodos(@Query() filtros?: FiltrosUsuarioDto): Promise<Omit<Usuario, 'senha'>[]> {
+        const usuarios = await this.usuarioService.obterTodos(filtros);
+        return usuarios.map(({ senha: _, ...usuarioSemSenha }) => usuarioSemSenha);
+    }
+
+    @Get(':id')
+    @UsuarioPermissoes(PapelUsuario.ADMINISTRADOR, PapelUsuario.PADRAO)
+    async obterPorId(@Param('id') id: number): Promise<Omit<Usuario, 'senha'>> {
+        const usuario = await this.usuarioService.obterPorId(id);
+        if (!usuario) {
+            throw new NotFoundException('Usuário inexistente');
+        }
+
+        const { senha: _, ...usuarioSemSenha } = usuario;
+
+        return usuarioSemSenha;
+    }
+
+    @Post()
+    @UsuarioPermissoes(PapelUsuario.ADMINISTRADOR)
+    async cadastrar(@Body() dto: CadastrarUsuarioDto): Promise<Omit<Usuario, 'senha'>> {
+        const novoUsuario = await this.usuarioService.cadastrar(dto);
+        if (!novoUsuario) {
+            throw new ConflictException('Este e-mail já está em uso');
+        }
+
+        const { senha: _, ...usuarioSemSenha } = novoUsuario;
+
+        return usuarioSemSenha;
+    }
+
+    @Patch(':id')
+    @UsuarioPermissoes(PapelUsuario.ADMINISTRADOR, PapelUsuario.PADRAO)
+    async atualizar(@Param('id') id: number, @Body() dto: AtualizarUsuarioDto): Promise<Omit<Usuario, 'senha'>> {
+        const usuarioAtualizado = await this.usuarioService.atualizar(id, dto);
+        if (!usuarioAtualizado) {
+            throw new NotFoundException('Usuário inexistente');
+        }
+
+        const { senha: _, ...usuarioSemSenha } = usuarioAtualizado;
+
+        return usuarioSemSenha;
+    }
+
+    @Delete(':id')
+    @HttpCode(204)
+    @UsuarioPermissoes(PapelUsuario.ADMINISTRADOR)
+    async remover(@Param('id') id: number): Promise<void> {
+        const usuario = await this.usuarioService.remover(id);
+        if (!usuario) {
+            throw new NotFoundException('Usuário inexistente');
+        }
     }
 }
 

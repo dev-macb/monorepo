@@ -55,7 +55,7 @@ monorepo/
 ### Fluxo de dependências
 
 ```
-       ┌──────────┐     HTTP      ┌──────────┐
+       ┌───────────┐     HTTP     ┌──────────┐
        │  apps/web │ ──────────►  │ apps/api │
        └─────┬─────┘              └─────┬────┘
              │ importa                  │ importa

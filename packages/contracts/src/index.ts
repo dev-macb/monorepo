@@ -1,4 +1,4 @@
-export { UsuarioRole } from './enums/usuario-role.enum';
+export { PapelUsuario } from './enums/papeis-usuario.enum';
 
 export type {
     Usuario,
@@ -8,8 +8,9 @@ export type {
     EntrarUsuarioRequest,
     EntrarUsuarioResponse,
     FiltrosUsuarioRequest,
+    TokenPayload,
 } from './types/usuario.types';
 
-export type { Post, CriarPostRequest, AtualizarPostRequest } from './types/post.types';
+export type { Postagem, PostagemFeed, CriarPostagemRequest, AtualizarPostagemRequest } from './types/postagem.types';
 
 export type { OlaMundoResponse } from './types/api.types';

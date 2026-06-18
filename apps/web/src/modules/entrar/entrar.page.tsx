@@ -1,27 +1,24 @@
 import './entrar.style.css';
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { usaTokenUsuario } from "../../shared/contexts/usuario.context";
+import { usaDependencias } from "../../shared/di/container";
+import { usaEntrarViewModel } from "./entrar.viewmodel";
 
-const EntrarPage = () => {
+function EntrarPage() {
     const navigate = useNavigate();
-    const { entrar } = usaTokenUsuario();
+    const { usuarioRepository } = usaDependencias();
+    const { 
+        email, 
+        senha, 
+        mensagemErro, 
+        carregando, 
+        definirEmail, 
+        definirSenha, 
+        login 
+    } = usaEntrarViewModel(usuarioRepository);
 
-    const [email, definirEmail] = useState('');
-    const [senha, definirSenha] = useState('');
-    const [mensagemErro, definirMensagemErro] = useState('');
-
-    const tratarEntrar = async (evento: React.FormEvent) => {
+    const tratarLogin = async (evento: React.FormEvent) => {
         evento.preventDefault();
-        definirMensagemErro('');
-
-        const resultado = await entrar(email, senha);
-
-        if (typeof resultado === 'string') {
-            definirMensagemErro(resultado);
-        } else {
-            navigate('/');
-        }
+        await login(() => navigate('/'));
     };
 
     return (
@@ -31,7 +28,8 @@ const EntrarPage = () => {
                     <span className="login-logo-title">Monorepo</span>
                     <span className="login-logo-sub">Preencha seus dados</span>
                 </div>
-                <form onSubmit={tratarEntrar} className="login-form">
+
+                <form onSubmit={tratarLogin} className="login-form">
                     <div className="login-field">
                         <input
                             type="email"
@@ -41,6 +39,7 @@ const EntrarPage = () => {
                             required
                         />
                     </div>
+
                     <div className="login-field">
                         <input
                             type="password"
@@ -50,29 +49,27 @@ const EntrarPage = () => {
                             required
                         />
                     </div>
+
                     {mensagemErro && (
                         <div className="login-erro">
                             {mensagemErro}
                         </div>
                     )}
-                    <button type="submit" className="login-btn">
-                        Entrar
+
+                    <button type="submit" className="login-btn" disabled={carregando}>
+                        {carregando ? 'Entrando…' : 'Entrar'}
                     </button>
                 </form>
 
                 <div className="login-footer">
                     <span className="login-footer-text">Não tem uma conta?</span>
-                    <button
-                        type="button"
-                        className="login-cadastro-link"
-                        onClick={() => { }}
-                    >
+                    <button type="button" className="login-cadastro-link" onClick={() => navigate('/registrar-se')}>
                         Cadastre-se
                     </button>
                 </div>
             </div>
         </div>
     );
-};
+}
 
 export { EntrarPage };

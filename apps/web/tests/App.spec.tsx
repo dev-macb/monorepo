@@ -1,5 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
-import { App } from '../src/App';
+import { App } from '../src/app/app';
 
 // Mock do fetch antes de todos os testes
 beforeAll(() => {

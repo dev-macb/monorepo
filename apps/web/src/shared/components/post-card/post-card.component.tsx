@@ -1,47 +1,22 @@
 import { useState } from 'react';
-import './cartao-postagem.style.css';
-import { formatarTempo, iniciais } from '../../utils/formatador.util';
+import './post-card.style.css';
+import { formatarData, formatarIniciais } from '../../utils/formatador.util';
+import type { PostagemFeed, Usuario } from '../../models';
 
-interface Tag {
-    nome: string;
-    total: number;
-}
-
-interface Post {
-    id: string;
-    conteudo: string;
-    tags: string[];
-    criadoEm: string;
-    autor: Usuario;
-    curtidas: number;
-    curtidoPorMim?: boolean;
-}
-
-interface Usuario {
-    id?: string;
-    tipo?: number;
-    nomeCompleto?: string;
-    email?: string;
-    senha?: string;
-    ativo?: boolean;
-    criadoEm?: string;
-    atualizadoEm?: string;
-}
-
-function Avatar({ usuario, tamanho = 36 }: { usuario: Usuario; tamanho?: number }) {
+function Avatar({ user, size = 36 }: { user: Usuario; size?: number }) {
     return (
-        <div className="post-avatar" style={{ width: tamanho, height: tamanho }}>
-            {iniciais(usuario.nomeCompleto!)}
+        <div className="post-avatar" style={{ width: size, height: size }}>
+            {formatarIniciais(user.nomeCompleto)}
         </div>
     );
 }
 
-function IconCoracao({ preenchido }: { preenchido: boolean }) {
+function HeartIcon({ filled }: { filled: boolean }) {
     return (
         <svg
             width="15" height="15"
             viewBox="0 0 24 24"
-            fill={preenchido ? 'currentColor' : 'none'}
+            fill={filled ? 'currentColor' : 'none'}
             stroke="currentColor"
             strokeWidth="1.8"
             strokeLinecap="round"
@@ -52,26 +27,26 @@ function IconCoracao({ preenchido }: { preenchido: boolean }) {
     );
 }
 
-export function CartaoPostagem({ post }: { post: Post }) {
+export function PostCard({ post }: { post: PostagemFeed }) {
     const [curtidas, setCurtidas] = useState(post.curtidas);
-    const [curtido, setCurtido] = useState(post.curtidoPorMim ?? false);
+    const [curtiu, setCurtiu] = useState(post.curtidoPorMim ?? false);
 
-    function toggleCurtida(e: React.MouseEvent) {
+    function alternarCurtida(e: React.MouseEvent) {
         e.stopPropagation();
-        setCurtidas((n) => curtido ? n - 1 : n + 1);
-        setCurtido((v) => !v);
+        setCurtidas((n) => curtiu ? n - 1 : n + 1);
+        setCurtiu((v) => !v);
     }
 
     return (
         <article className="post-card">
-            <Avatar usuario={post.autor} />
+            <Avatar user={post.autor} />
 
             <div className="post-body">
                 <div className="post-meta">
                     <span className="post-author-name">{post.autor.nomeCompleto}</span>
                     <span className="post-handle">@{post.autor.tipo}</span>
                     <span className="post-dot">·</span>
-                    <span className="post-time">{formatarTempo(post.criadoEm)}</span>
+                    <span className="post-time">{formatarData(post.criadoEm)}</span>
                 </div>
 
                 <p className="post-content">{post.conteudo}</p>
@@ -86,11 +61,11 @@ export function CartaoPostagem({ post }: { post: Post }) {
 
                 <div className="post-actions">
                     <button
-                        className={`post-like-btn${curtido ? ' active' : ''}`}
-                        onClick={toggleCurtida}
+                        className={`post-like-btn${curtiu ? ' active' : ''}`}
+                        onClick={alternarCurtida}
                         aria-label="Curtir"
                     >
-                        <IconCoracao preenchido={curtido} />
+                            <HeartIcon filled={curtiu} />
                         {curtidas}
                     </button>
                 </div>

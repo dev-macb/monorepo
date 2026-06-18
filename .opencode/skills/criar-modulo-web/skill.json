@@ -1,0 +1,4 @@
+{
+    "name": "criar-modulo-web",
+    "description": "Scaffold de página React no frontend. Use ao criar uma nova página/módulo (ex: perfil, configurações, admin). Cria page, viewmodel, style e registra a rota."
+}

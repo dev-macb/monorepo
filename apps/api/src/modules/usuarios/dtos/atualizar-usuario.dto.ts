@@ -1,12 +1,12 @@
 import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
-import { Usuarios } from '../../../shared/enums/usuarios.enum';
+import { PapelUsuario } from '@monorepo/contracts';
 import { CadastrarUsuarioDto } from './cadastrar-usuario.dto';
 import { PartialType } from '@nestjs/mapped-types';
 
 class AtualizarUsuarioDto extends PartialType(CadastrarUsuarioDto) {
     @IsOptional()
-    @IsEnum(Usuarios, { message: 'Tipo inválido' })
-    tipo?: Usuarios;
+    @IsEnum(PapelUsuario, { message: 'Tipo inválido' })
+    tipo?: PapelUsuario;
 
     @IsOptional()
     @IsBoolean()

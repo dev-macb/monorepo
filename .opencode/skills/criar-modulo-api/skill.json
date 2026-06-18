@@ -1,0 +1,4 @@
+{
+    "name": "criar-modulo-api",
+    "description": "Scaffold de módulo NestJS no backend. Use ao criar um novo domínio (ex: postagens, comentários, categorias). Cria entity, DTOs, service, controller, module e atualiza registros centrais."
+}

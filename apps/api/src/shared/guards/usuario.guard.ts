@@ -2,7 +2,7 @@ import { ExecutionContext, ForbiddenException, Injectable, UnauthorizedException
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { PUBLICO } from '../decorators/permissoes.decorator';
-import { Usuarios } from '../enums/usuarios.enum';
+import { PapelUsuario } from '@monorepo/contracts';
 import { USUARIO_PERMISSOES } from '../decorators/permissoes.decorator';
 
 @Injectable()
@@ -12,7 +12,6 @@ export class UsuarioGuard extends AuthGuard('usuario-jwt') {
     }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        // Verifica se a rota é pública
         const isPublic = this.reflector.getAllAndOverride<boolean>(PUBLICO, [context.getHandler(), context.getClass()]);
 
         if (isPublic) {
@@ -31,7 +30,7 @@ export class UsuarioGuard extends AuthGuard('usuario-jwt') {
             throw new UnauthorizedException('Usuário não autenticado');
         }
 
-        const permissoesRequeridas = this.reflector.get<Usuarios[]>(USUARIO_PERMISSOES, context.getHandler());
+        const permissoesRequeridas = this.reflector.get<PapelUsuario[]>(USUARIO_PERMISSOES, context.getHandler());
 
         if (!permissoesRequeridas || permissoesRequeridas.length === 0) {
             return true;

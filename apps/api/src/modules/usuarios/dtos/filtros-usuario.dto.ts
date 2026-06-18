@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
-import { Usuario } from '../entities/usuario.entity';
 import { IsOptional, IsBoolean, IsString, MinLength, IsEmail, IsEnum } from 'class-validator';
+import { PapelUsuario } from '@monorepo/contracts';
 
 class FiltrosUsuarioDto {
     @IsOptional()
@@ -13,8 +13,8 @@ class FiltrosUsuarioDto {
     email?: string;
 
     @IsOptional()
-    @IsEnum(Usuario, { message: 'Tipo de usuario inválido' })
-    tipo?: Usuario;
+    @IsEnum(PapelUsuario, { message: 'Tipo de usuário inválido' })
+    tipo?: PapelUsuario;
 
     @IsOptional()
     @Type(() => Boolean)

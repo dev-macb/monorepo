@@ -1,10 +1,10 @@
 import { SetMetadata } from '@nestjs/common';
-import { Usuarios } from '../enums/usuarios.enum';
+import { PapelUsuario } from '@monorepo/contracts';
 
 const PUBLICO = 'publico';
 const USUARIO_PERMISSOES = 'usuario_permissoes';
 
 const Publico = () => SetMetadata(PUBLICO, true);
-const UsuarioPermissoes = (...permissoes: Usuarios[]) => SetMetadata(USUARIO_PERMISSOES, permissoes);
+const UsuarioPermissoes = (...permissoes: PapelUsuario[]) => SetMetadata(USUARIO_PERMISSOES, permissoes);
 
 export { Publico, UsuarioPermissoes, PUBLICO, USUARIO_PERMISSOES };

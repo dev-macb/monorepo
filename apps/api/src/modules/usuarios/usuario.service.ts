@@ -62,10 +62,10 @@ class UsuarioService {
         return usuario;
     }
 
-    async cadastrar(dto: CadastrarUsuarioDto): Promise<Usuario> {
+    async cadastrar(dto: CadastrarUsuarioDto): Promise<Usuario | null> {
         const emailEmUso = await this.obterPorEmail(dto.email);
         if (emailEmUso) {
-            throw new ConflictException('Este e-mail já está em uso');
+            return null;
         }
 
         const usuario = this.repositorio.create(dto);
@@ -83,7 +83,7 @@ class UsuarioService {
         if (dto.email && dto.email !== usuario.email) {
             const emailEmUso = await this.obterPorEmail(dto.email);
             if (emailEmUso) {
-                throw new ConflictException('Este e-mail já está em uso por outro usuario');
+                throw new ConflictException('Este e-mail já está em uso por outro usuário');
             }
         }
 

@@ -1,113 +1,66 @@
 import './inicio.style.css';
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../../shared/services/api.service';
-import { usaTokenUsuario } from '../../shared/contexts/usuario.context';
-import { PerfilDialog } from '../../shared/dialogs/usuario-perfil.dialog';
-import { PainelTags } from '../../shared/components/painel-tags/painel-tags.component';
-import { MenuLateral } from '../../shared/components/menu-lateral/menu-lateral.component';
-import { FeedPostagens } from '../../shared/components/feed-postagens/feed-postagens.component';
-
-interface Usuario {
-    id?: string;
-    tipo?: number;
-    nomeCompleto?: string;
-    email?: string;
-    senha?: string;
-    ativo?: boolean;
-    criadoEm?: string;
-    atualizadoEm?: string;
-}
+import { usaDependencias } from '../../shared/di/container';
+import { usaAutenticacao } from '../../shared/contexts/autenticacao.context';
+import { usaInicioViewModel } from './inicio.viewmodel';
+import { ProfileDialog } from '../../shared/components/dialogs/user-profile/user-profile.dialog';
+import { TagsPanel } from '../../shared/components/tags-panel/tags-panel.component';
+import { Sidebar } from '../../shared/components/sidebar/sidebar.component';
+import { Feed } from '../../shared/components/feed/feed.component';
 
 function InicioPage() {
     const navigate = useNavigate();
-    const { usuario, estaAutenticado, carregando: carregandoAutenticacao, sair } = usaTokenUsuario();
+    const { payload, isAuthenticated, carregando } = usaAutenticacao();
+    const { usuarioRepository } = usaDependencias();
 
-    const [usuarioAtual, setUsuarioAtual] = useState<Usuario | null>(null);
-    const [mostrarPerfil, setMostrarPerfil] = useState(false);
+    const {
+        usuarioAtual,
+        carregandoUsuario,
+        mostrarPerfil,
+        abrirPerfil,
+        fecharPerfil,
+        atualizarUsuario,
+        sair,
+    } = usaInicioViewModel(
+        usuarioRepository,
+        isAuthenticated,
+        payload?.idUsuario ?? null,
+        () => navigate('/entrar'),
+    );
 
-    useEffect(() => {
-        const tratarMundancaDeHash = () => {
-            setMostrarPerfil(window.location.hash === '#perfil-usuario');
-        };
-
-        tratarMundancaDeHash();
-
-        window.addEventListener('hashchange', tratarMundancaDeHash);
-        
-        return () => {
-            window.removeEventListener('hashchange', tratarMundancaDeHash);
-        };
-    }, []);
-
-    useEffect(() => {
-        const buscarUsuarioAutenticado = async () => {
-            if (estaAutenticado && usuario) {
-                try {
-                    const usuarioAutenticado = await api.get<Usuario>(`usuarios/${usuario.idUsuario}`);
-                    if (!usuarioAutenticado) return;
-
-                    setUsuarioAtual(usuarioAutenticado);
-                }
-                catch (erro) {
-                    sair();
-                    navigate('/entrar');
-                }
-            } else {
-                setUsuarioAtual(null);
-            }
-        };
-
-        if (!carregandoAutenticacao) {
-            buscarUsuarioAutenticado();
-        }
-    }, [estaAutenticado, usuario, carregandoAutenticacao]);
-
-    const tratarAbrirPerfil = () => {
-        window.location.hash = 'perfil-usuario';
-    };
-
-    const tratarFecharPerfil = () => {
-        setMostrarPerfil(false);
-        window.history.pushState('', document.title, window.location.pathname + window.location.search);
-    };
-
-    const tratarAtualizarUsuario = (usuarioAtualizado: Usuario) => {
-        setUsuarioAtual(usuarioAtualizado);
-        tratarFecharPerfil();
-    };
+    if (carregando || carregandoUsuario) return null;
 
     return (
         <div className="inicio-layout">
-            <MenuLateral
-                titulo="Monorepo"
-                subTitulo="template"
-                itens={[
-                    { icone: '⌂', texto: 'Postagens', ativo: true },
-                    { icone: '⌂', texto: 'Tags', ativo: false },
+            <Sidebar
+                title="Monorepo"
+                subtitle="template"
+                items={[
+                    { icon: '⌂', label: 'Postagens', active: true },
+                    { icon: '⌂', label: 'Tags', active: false },
                 ]}
-                usuarioAtual={usuarioAtual}
-                estaAutenticado={estaAutenticado}
-                onSair={sair}
-                onAbrirPerfil={tratarAbrirPerfil}
+                currentUser={usuarioAtual}
+                isAuthenticated={isAuthenticated}
+                onLogout={sair}
+                onOpenProfile={abrirPerfil}
             />
 
-            <FeedPostagens
-                usuarioAtual={usuarioAtual}
-                usuarioLogado={estaAutenticado && !!usuario}
+            <Feed
+                currentUser={usuarioAtual}
+                estaAutenticado={isAuthenticated}
             />
 
-            <PainelTags
+            <TagsPanel
                 tags={[]}
-                tagAtiva={null}
-                onSelecionar={() => {}}
+                activeTag={null}
+                onSelect={() => { }}
             />
 
-            <PerfilDialog
-                usuario={usuarioAtual}
-                isOpen={mostrarPerfil}
-                onClose={tratarFecharPerfil}
-                onUpdate={tratarAtualizarUsuario}
+            <ProfileDialog
+                user={usuarioAtual}
+                aberto={mostrarPerfil}
+                onClose={fecharPerfil}
+                onUpdate={atualizarUsuario}
             />
         </div>
     );

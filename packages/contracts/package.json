@@ -7,9 +7,9 @@
     "exports": {
         ".": "./src/index.ts",
         "./types/usuario": "./src/types/usuario.types.ts",
-        "./types/post": "./src/types/post.types.ts",
+        "./types/postagem": "./src/types/postagem.types.ts",
         "./types/api": "./src/types/api.types.ts",
-        "./enums/usuario-role": "./src/enums/usuario-role.enum.ts"
+        "./enums/papeis-usuario": "./src/enums/papeis-usuario.enum.ts"
     },
     "scripts": {
         "build": "tsc --emitDeclarationOnly --declaration --declarationMap",

@@ -1,19 +1,20 @@
-import { UsuarioRole } from '../enums/usuario-role.enum';
+import { PapelUsuario } from '../enums/papeis-usuario.enum';
 
 export interface Usuario {
     id: number;
-    tipo: UsuarioRole;
+    tipo: PapelUsuario;
     nomeCompleto: string;
     email: string;
+    senha: string;
     ativo: boolean;
-    criadoEm: Date;
-    atualizadoEm: Date;
+    criadoEm: string;
+    atualizadoEm: string;
 }
 
 export interface UsuarioSemSenha extends Omit<Usuario, 'senha'> {}
 
 export interface CadastrarUsuarioRequest {
-    tipo?: UsuarioRole;
+    tipo?: PapelUsuario;
     nomeCompleto: string;
     email: string;
     senha: string;
@@ -36,6 +37,11 @@ export interface EntrarUsuarioResponse {
 export interface FiltrosUsuarioRequest {
     nomeCompleto?: string;
     email?: string;
-    tipo?: UsuarioRole;
+    tipo?: PapelUsuario;
     ativo?: boolean;
+}
+
+export interface TokenPayload {
+    idUsuario: number;
+    tipoUsuario: number;
 }
