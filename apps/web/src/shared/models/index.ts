@@ -10,6 +10,9 @@ export type {
     TokenPayload,
     Postagem,
     PostagemFeed,
+    Etiqueta,
+    CriarEtiquetaRequest,
+    AtualizarEtiquetaRequest,
 } from '@monorepo/contracts';
 
 

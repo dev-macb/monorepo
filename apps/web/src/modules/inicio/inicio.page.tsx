@@ -37,7 +37,7 @@ function InicioPage() {
                 subtitle="template"
                 items={[
                     { icon: '⌂', label: 'Postagens', active: true },
-                    { icon: '⌂', label: 'Tags', active: false },
+                    { icon: '⌂', label: 'Etiquetas', active: false, onClick: () => navigate('/etiquetas') },
                 ]}
                 currentUser={usuarioAtual}
                 isAuthenticated={isAuthenticated}

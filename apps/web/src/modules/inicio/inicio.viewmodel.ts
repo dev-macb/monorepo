@@ -14,21 +14,27 @@ function usaInicioViewModel(
     const [mostrarPerfil, setMostrarPerfil] = useState(false);
 
     useEffect(() => {
+        let mounted = true;
+
         const buscarUsuario = async () => {
             if (estaAutenticado && idUsuario !== null) {
                 try {
                     const usuario = await usuarioRepository.obterPorId(idUsuario);
+                    if (!mounted) return;
                     setUsuarioAtual(usuario);
                 } catch {
-                    JwtService.removerToken();
-                    aoRedirecionarEntrar();
+                    if (!mounted) return;
+                    setCarregandoUsuario(false);
+                    return;
                 }
             } else {
                 setUsuarioAtual(null);
             }
-            setCarregandoUsuario(false);
+            if (mounted) setCarregandoUsuario(false);
         };
         buscarUsuario();
+
+        return () => { mounted = false; };
     }, [estaAutenticado, idUsuario]);
 
     const abrirPerfil = useCallback(() => {

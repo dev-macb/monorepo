@@ -1,0 +1,50 @@
+### obterTodos (público)
+GET http://localhost:3000/etiquetas
+
+
+### obterPorId (público)
+GET http://localhost:3000/etiquetas/1
+
+
+### criar (admin)
+POST http://localhost:3000/etiquetas
+Content-Type: application/json
+Authorization: Bearer <token_admin>
+
+{
+    "nome": "typescript"
+}
+
+
+### criar (sem token — deve falhar 401)
+POST http://localhost:3000/etiquetas
+Content-Type: application/json
+
+{
+    "nome": "node"
+}
+
+
+### atualizar (admin)
+PATCH http://localhost:3000/etiquetas/1
+Content-Type: application/json
+Authorization: Bearer <token_admin>
+
+{
+    "nome": "TypeScript"
+}
+
+
+### remover (admin)
+DELETE http://localhost:3000/etiquetas/1
+Authorization: Bearer <token_admin>
+
+
+### criar duplicado (deve falhar 409)
+POST http://localhost:3000/etiquetas
+Content-Type: application/json
+Authorization: Bearer <token_admin>
+
+{
+    "nome": "typescript"
+}

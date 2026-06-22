@@ -14,19 +14,24 @@ export function usaFeedViewModel(
     const [activeTag, setActiveTag] = useState<string | null>(null);
 
     useEffect(() => {
+        let mounted = true;
+
         const fetchPosts = async () => {
             setLoading(true);
             setError(null);
             try {
                 const data = await postRepository.obterTodos();
+                if (!mounted) return;
                 setPosts(data ?? []);
             } catch {
-                setError('Não foi possível carregar as postagens.');
+                if (mounted) setError('Não foi possível carregar as postagens.');
             } finally {
-                setLoading(false);
+                if (mounted) setLoading(false);
             }
         };
         fetchPosts();
+
+        return () => { mounted = false; };
     }, [activeTab, postRepository]);
 
     const publish = useCallback(async (content: string, tags: string[]) => {

@@ -1,17 +1,16 @@
-// Cada workspace tem seu próprio jest.config.js.
-// Este config raiz só é usado ao rodar `npx jest` da raiz.
-export default {
+module.exports = {
     preset: 'ts-jest',
     testEnvironment: 'node',
-    testMatch: ['<rootDir>/apps/api/tests/**/*.spec.ts'],
+    testMatch: ['**/tests/**/*.spec.ts'],
     moduleNameMapper: {
-        '^@monorepo/contracts$': '<rootDir>/packages/contracts/src/index.ts',
+        '^@monorepo/contracts$': '<rootDir>/../../packages/contracts/src/index.ts',
         '^(\\.{1,2}/.*)\\.js$': '$1',
     },
     transform: {
         '^.+\\.tsx?$': [
             'ts-jest',
             {
+                diagnostics: false,
                 tsconfig: {
                     esModuleInterop: true,
                     emitDecoratorMetadata: true,

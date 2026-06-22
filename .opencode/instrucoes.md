@@ -98,7 +98,27 @@ monorepo/
 
 ---
 
+## Estrutura da pasta `.opencode`
+
+```
+.opencode/
+├── instrucoes.md        # Este arquivo — padrões do projeto
+├── APRENDIZADOS.md      # Aprendizados entre sessões
+├── PADROES.md           # Documentação arquitetural detalhada
+├── TEMPLATE-SPEC.md     # Template para specs (SDD)
+├── specs/               # Specs de funcionalidades (planejamento futuro)
+│   ├── SPEC-{nome}.md
+│   └── .gitkeep
+├── modulos/             # Documentação de módulos já implementados
+│   └── {MODULO}.md      # Ex.: USUARIO.md, POSTAGEM.md
+└── skills/              # Skills (scaffolding automatizado)
+    ├── criar-modulo-api/
+    └── criar-modulo-web/
+```
+
 ## Leia também
 
 - `.opencode/PADROES.md` — documentação completa com arquitetura, naming, exemplos detalhados, pitfalls
 - `.opencode/TEMPLATE-SPEC.md` — template para criar specs no formato SDD
+- `.opencode/modulos/` — documentação de módulos existentes
+- `.opencode/specs/` — specs de funcionalidades futuras

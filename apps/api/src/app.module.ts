@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { EtiquetaModule } from './modules/etiquetas/etiqueta.module';
 import { UsuarioModule } from './modules/usuarios/usuario.module';
 import { DatabaseService } from './data/database.service';
 import { LoggerUtil } from './shared/utils/logger.util';
@@ -71,6 +72,7 @@ import { AppService } from './app.service';
                 messageKey: 'msg',
             },
         }),
+        EtiquetaModule,
         UsuarioModule,
     ],
     providers: [

@@ -13,4 +13,6 @@ export type {
 
 export type { Postagem, PostagemFeed, CriarPostagemRequest, AtualizarPostagemRequest } from './types/postagem.types.js';
 
+export type { Etiqueta, CriarEtiquetaRequest, AtualizarEtiquetaRequest } from './types/etiqueta.types.js';
+
 export type { OlaMundoResponse } from './types/api.types.js';
