@@ -1,6 +1,6 @@
-æææ# Monorepo Boilerplate
+# Monorepo Boilerplate
 
-Template de monorepo full-stack para produção com **Turborepo**, **NestJS**, **React (Vite)**, **Nginx** e **Docker**.
+Boilerplate full-stack para produção com **Turborepo**, **NestJS 11**, **React 19 (Vite)**, **Nginx** e **Docker**.
 
 ---
 
@@ -349,8 +349,11 @@ docker compose --profile prod logs -f postgres
 | `npm run dev:web` | Apenas o frontend |
 | `npm run build` | Compila todos os pacotes com cache |
 | `npm run test` | Roda testes em todos os workspaces |
+| `npm run test:watch` | Testes em modo watch |
+| `npm run test:cov` | Testes com relatório de cobertura |
 | `npm run lint` | ESLint em todo o código |
 | `npm run format` | Prettier em todo o código |
+| `npm run format:check` | Verifica formatação sem alterar |
 | `docker compose --profile dev up -d` | Dev com Docker |
 | `docker compose --profile prod up -d` | Prod com Docker |
 
@@ -369,6 +372,41 @@ docker compose --profile prod logs -f postgres
 | `USUARIO_JWT` | Chave JWT | `usuario-jwt` |
 | `USUARIO_SENHA` | Senha admin padrão | `senha123` |
 | `VITE_API_URL` | URL da API para o frontend | `http://localhost:3000` |
+
+---
+
+## Documentação do Projeto
+
+A documentação arquitetural detalhada está em `.opencode/`:
+
+| Arquivo | Conteúdo |
+|---------|----------|
+| `.opencode/PADROES.md` | Arquitetura completa, convenções de código, padrões de CSS, testes, git workflow |
+| `.opencode/instrucoes.md` | Padrões do projeto, estrutura de módulos, convenções rápidas para desenvolvimento |
+| `.opencode/modulos/` | Documentação de módulos implementados (ex.: `USUARIO.md`) |
+| `.opencode/specs/` | Spec-Driven Development — especificações de novas funcionalidades |
+| `.opencode/TEMPLATE-SPEC.md` | Template para criar novas specs |
+
+---
+
+## Contribuição
+
+### Spec-Driven Development
+
+Toda funcionalidade começa com uma spec em `.opencode/specs/SPEC-{nome}.md` seguindo o template em `.opencode/TEMPLATE-SPEC.md`. A spec deve ser aprovada antes de qualquer implementação.
+
+### Skills de Scaffolding
+
+O projeto inclui skills automatizadas para acelerar a criação de novos módulos:
+
+| Skill | Gera |
+|-------|------|
+| `criar-modulo-api` | Módulo NestJS completo (entity, DTOs, service, controller, module) |
+| `criar-modulo-web` | Página React (page, viewmodel, style, rota, repositório) |
+
+### Padrões
+
+Consulte `.opencode/PADROES.md` para a documentação completa de arquitetura, convenções de código, testes e git workflow.
 
 ---
 
