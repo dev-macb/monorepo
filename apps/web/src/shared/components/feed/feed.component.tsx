@@ -98,7 +98,7 @@ function ComposeBox({
 
                 <div className="compose-footer">
                     {texto.length > 0 && (
-                        <span className={counterClass}>{remaining}</span>
+                        <span className={counterClass}>{restante}</span>
                     )}
                     <button
                         className="compose-submit-btn"

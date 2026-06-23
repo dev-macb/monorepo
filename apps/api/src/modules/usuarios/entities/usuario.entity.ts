@@ -8,7 +8,7 @@ class Usuario {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ enum: TipoUsuario, default: TipoUsuario.PADRAO })
+    @Column({ type: 'integer', enum: TipoUsuario, default: TipoUsuario.PADRAO })
     tipo: TipoUsuario;
 
     @Column({ name: 'nome_completo', unique: true })

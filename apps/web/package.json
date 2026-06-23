@@ -6,7 +6,7 @@
         "build": "vite build",
         "dev": "vite",
         "lint": "echo 'Running eslint for web'",
-        "test": "echo 'No tests yet for web'"
+        "test": "jest"
     },
     "dependencies": {
         "@monorepo/contracts": "*",

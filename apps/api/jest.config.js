@@ -6,6 +6,7 @@ module.exports = {
         '^@monorepo/contracts$': '<rootDir>/../../packages/contracts/src/index.ts',
         '^(\\.{1,2}/.*)\\.js$': '$1',
     },
+    setupFiles: ['<rootDir>/tests/setup.ts'],
     transform: {
         '^.+\\.tsx?$': [
             'ts-jest',

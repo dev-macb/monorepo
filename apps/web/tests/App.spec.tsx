@@ -1,19 +1,27 @@
 import { render, waitFor } from '@testing-library/react';
 import { App } from '../src/app/app';
 
-// Mock do fetch antes de todos os testes
-beforeAll(() => {
-    (globalThis as any).fetch = jest.fn(() =>
-        Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({ mensagem: 'Olá', data: new Date() }),
-        })
-    ) as jest.Mock;
-});
+jest.mock('../src/shared/services/api.service', () => ({
+    api: {
+        get: jest.fn(),
+        post: jest.fn(),
+        put: jest.fn(),
+        patch: jest.fn(),
+        delete: jest.fn(),
+        definirTokenUsuario: jest.fn(),
+        removerTokenUsuario: jest.fn(),
+        estaAutenticado: jest.fn(),
+    },
+}));
 
-afterAll(() => {
-    jest.restoreAllMocks();
-});
+jest.mock('../src/shared/services/jwt.service', () => ({
+    JwtService: {
+        obterToken: jest.fn(() => null),
+        decodificarToken: jest.fn(),
+        definirToken: jest.fn(),
+        removerToken: jest.fn(),
+    },
+}));
 
 describe('App', () => {
     it('deve renderizar sem erros', async () => {
