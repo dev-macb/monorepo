@@ -836,9 +836,63 @@ describe('UsuarioService', () => {
 - Mockar `Repository<T>` do TypeORM com `mockRepository`
 - Usar `describe` / `it` em português
 
-### 10.5 Padrão de teste (frontend)
+### 10.5 Configuração do Jest (web)
 
+**Arquivo:** `apps/web/jest.config.js`
+
+```js
+module.exports = {
+    preset: 'ts-jest',
+    testEnvironment: 'jsdom',
+    testMatch: ['**/tests/**/*.spec.ts', '**/tests/**/*.spec.tsx'],
+    setupFiles: ['<rootDir>/tests/jest.polyfills.js'],
+    moduleNameMapper: {
+        '^@monorepo/contracts$': '<rootDir>/../../packages/contracts/src/index.ts',
+        '^(\\.{1,2}/.*)\\.js$': '$1',
+        '\\.(css|less|scss)$': '<rootDir>/tests/__mocks__/styleMock.js',
+    },
+    transform: {
+        '^.+\\.tsx?$': ['ts-jest', { tsconfig: { jsx: 'react-jsx', esModuleInterop: true } }],
+    },
+};
+```
+
+- `jsdom` — ambiente DOM simulado (sem navegador real)
+- `styleMock.js` — mock para imports de CSS (evita erro de parse)
+- `jest.polyfills.js` — polyfills de `TextEncoder`/`TextDecoder` para jsdom
+
+### 10.6 Estrutura de diretórios
+
+```
+apps/web/tests/
+├── __mocks__/
+│   └── styleMock.js              # Mock para CSS imports
+├── jest.polyfills.js              # Polyfills TextEncoder/TextDecoder
+├── App.spec.tsx                   # Renderização do App
+└── entrar/
+    ├── entrar.page.spec.tsx       # Testes de UI do formulário de login
+    ├── entrar.viewmodel.spec.ts   # Testes do hook de estado (ViewModel)
+    └── usuario.repository.spec.ts # Testes do repositório HTTP
+```
+
+### 10.7 Suítes de teste
+
+#### 10.7.1 `App.spec.tsx`
+
+Garante que o componente raiz renderiza sem erros com mocks dos serviços globais.
+
+| Teste | Descrição |
+|-------|-----------|
+| `deve renderizar sem erros` | Renderiza `<App />` com `api.service` e `jwt.service` mockados |
+
+**Padrão:**
 ```typescript
+import { render, waitFor } from '@testing-library/react';
+
+jest.mock('../src/shared/services/api.service', () => ({
+    api: { get: jest.fn(), post: jest.fn(), /* ... */ },
+}));
+
 describe('App', () => {
     it('deve renderizar sem erros', async () => {
         render(<App />);
@@ -847,9 +901,107 @@ describe('App', () => {
 });
 ```
 
-- `@testing-library/react` para renderizar componentes
-- `waitFor` para operações assíncronas
-- Mockar chamadas de API antes dos testes (`beforeAll`)
+#### 10.7.2 `entrar/entrar.page.spec.tsx`
+
+Testa o componente de página `EntrarPage`. Usa uma **variável global mutável** (`viewModelMock`) para simular diferentes estados do viewModel sem re-mockar.
+
+| Teste | Descrição |
+|-------|-----------|
+| `deve renderizar o formulario de login` | Inputs email/senha e botão Entrar existem |
+| `deve chamar definirEmail ao digitar no campo email` | `fireEvent.change` → `definirEmail` chamado |
+| `deve chamar definirSenha ao digitar no campo senha` | `fireEvent.change` → `definirSenha` chamado |
+| `deve chamar login ao submeter o formulario` | Submit do form → `login` chamado com callback |
+| `deve exibir mensagem de erro quando houver` | `viewModelMock.mensagemErro` definido → texto exibido |
+| `deve desabilitar o botao quando carregando` | `viewModelMock.carregando = true` → botão desabilitado |
+| `deve navegar para /registrar-se ao clicar em Cadastre-se` | Click no link → `navigate('/registrar-se')` |
+| `deve exibir logo e subtitulo` | Textos "Monorepo", "Preencha seus dados", "tem uma conta" |
+
+**Padrão de mock de viewModel:**
+```typescript
+let viewModelMock: { email: string; senha: string; mensagemErro: string; carregando: boolean; /* ... */ };
+
+jest.mock('../../src/modules/entrar/entrar.viewmodel', () => ({
+    usaEntrarViewModel: () => viewModelMock,
+}));
+
+function criarViewModel() {
+    return {
+        email: '', senha: '', mensagemErro: '', carregando: false,
+        definirEmail: jest.fn(), definirSenha: jest.fn(),
+        login: jest.fn(),
+    };
+}
+
+beforeEach(() => {
+    viewModelMock = criarViewModel();
+});
+```
+
+- O mock retorna a **variável global** `viewModelMock`
+- Cada teste altera propriedades do mock antes de renderizar (ex.: `viewModelMock.carregando = true`)
+- `jest.mock` no topo do arquivo (hoisted), `beforeEach` reseta os mocks
+
+#### 10.7.3 `entrar/entrar.viewmodel.spec.ts`
+
+Testa o hook `usaEntrarViewModel` isoladamente com `renderHook` + `act`, mockando apenas o `usuarioRepository`.
+
+| Teste | Descrição |
+|-------|-----------|
+| `deve logar com sucesso` | Repository resolve → token salvo, callback chamado, loading false |
+| `deve definir mensagem de erro quando campos vazios` | Email/senha vazios → mensagem "Preencha todos os campos" |
+| `deve manter carregando como false quando email vazio` | Validação falha antes da chamada → loading nunca fica true |
+| `deve definir mensagem de erro quando credenciais invalidas` | Repository rejeita com `response.data.message` → mensagem exibida |
+| `deve extrair mensagem de error.response.data.error quando message ausente` | Fallback para `error.response.data.error` |
+| `deve usar mensagem padrao quando erro nao tem response` | Erro sem response → "Erro desconhecido" |
+| `deve alterar carregando durante a requisicao` | Loading `true` durante a Promise, `false` após resolver |
+
+**Padrão:**
+```typescript
+import { renderHook, act } from '@testing-library/react';
+
+it('deve logar com sucesso', async () => {
+    usuarioRepositoryMock.entrar.mockResolvedValue('token-jwt');
+
+    const { result } = renderHook(() =>
+        usaEntrarViewModel(usuarioRepositoryMock, definirAutenticacaoMock));
+
+    act(() => { result.current.definirEmail('user@email.com'); });
+    act(() => { result.current.definirSenha('senha123'); });
+
+    await act(async () => { await result.current.login(onSuccessMock); });
+
+    expect(usuarioRepositoryMock.entrar).toHaveBeenCalledWith('user@email.com', 'senha123');
+    expect(result.current.carregando).toBe(false);
+});
+```
+
+- `renderHook` cria o hook sem renderizar DOM
+- `act()` envolve mutações de estado e chamadas assíncronas
+- ViewModels recebem repositórios por parâmetro (não usam DI), facilitando o mock
+
+#### 10.7.4 `entrar/usuario.repository.spec.ts`
+
+Testa a camada de repositório isolando `api.service` com `jest.mock`.
+
+| Teste | Descrição |
+|-------|-----------|
+| `deve chamar api.post com url e dados corretos` | Verifica URL `/usuarios/entrar`, payload `{ email, senha }` |
+| `deve retornar token_usuario da resposta` | Extrai `token_usuario` do body |
+| `deve propagar erro quando api.post rejeita` | Erro é relançado para o caller |
+
+### 10.8 Padrões e boas práticas (frontend)
+
+| Prática | Descrição |
+|---------|-----------|
+| **Mock de serviços** | Use `jest.mock(<caminho>, () => ({ ... }))` no topo do arquivo |
+| **Mock de viewModel (páginas)** | Variável global mutável + `jest.mock` retornando a variável; altere props antes de renderizar |
+| **`renderHook` + `act`** | Para testar hooks isoladamente, sempre envolvendo mutações em `act()` |
+| **Testes descritivos em PT** | `describe('EntrarPage')` / `it('deve logar com sucesso')` |
+| **Reset de mocks** | `jest.clearAllMocks()` no `beforeEach` para isolar testes |
+| **Testes de UI** | Use `screen.getByRole`, `getByPlaceholderText`, `getByText`; evite `testid` |
+| **Eventos** | `fireEvent.change(input, { target: { value } })` para inputs |
+| **Assíncrono** | `await act(async () => { await funcao() })` para operações com Promise |
+| **Cobertura de estados** | Teste: sucesso, erro (várias fontes), loading, validação, vazio |
 
 ---
 

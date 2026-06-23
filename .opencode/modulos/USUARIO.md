@@ -188,6 +188,69 @@ Módulo de autenticação e gerenciamento de usuários. Permite cadastro, login,
 
 Contrato que define todos os métodos acima, implementado por `UsuarioRepository`.
 
+### Testes (`apps/web/tests/entrar/`)
+
+#### `entrar.page.spec.tsx` — Testes de UI
+
+Mocka o viewModel via variável global mutável (`viewModelMock`) para simular estados sem re-mockar.
+
+| Teste | O que verifica |
+|-------|----------------|
+| `deve renderizar o formulario de login` | Inputs email/senha e botão "Entrar" existem no DOM |
+| `deve chamar definirEmail ao digitar no campo email` | `fireEvent.change` no input email → `definirEmail` chamado com o valor |
+| `deve chamar definirSenha ao digitar no campo senha` | `fireEvent.change` no input senha → `definirSenha` chamado com o valor |
+| `deve chamar login ao submeter o formulario` | Submit do `<form>` → `login` chamado com função callback |
+| `deve exibir mensagem de erro quando houver` | `viewModelMock.mensagemErro = '...'` → texto renderizado na tela |
+| `deve desabilitar o botao quando carregando` | `viewModelMock.carregando = true` → botão desabilitado com texto "Entrando..." |
+| `deve navegar para /registrar-se ao clicar em Cadastre-se` | Click no link → `useNavigate` chamado com `/registrar-se` |
+| `deve exibir logo e subtitulo` | Textos "Monorepo", "Preencha seus dados" e "tem uma conta" presentes |
+
+**Mock de roteador e viewModel:**
+```typescript
+jest.mock('react-router-dom', () => ({ useNavigate: () => mockNavigate }));
+jest.mock('../../src/modules/entrar/entrar.viewmodel', () => ({
+    usaEntrarViewModel: () => viewModelMock,
+}));
+```
+
+#### `entrar.viewmodel.spec.ts` — Testes do hook
+
+Testa `usaEntrarViewModel` com `renderHook` + `act`, mockando `UsuarioRepositoryInterface`.
+
+| Teste | O que verifica |
+|-------|----------------|
+| `deve logar com sucesso` | Fluxo completo: repository → token → `definirAutenticacao` → callback → loading false |
+| `deve definir mensagem de erro quando campos vazios` | Validação client-side: "Preencha todos os campos" sem chamar API |
+| `deve manter carregando como false quando email vazio` | loading nunca fica `true` quando validação falha antes da requisição |
+| `deve definir mensagem de erro quando credenciais invalidas` | `response.data.message` do backend é exibida |
+| `deve extrair mensagem de error.response.data.error quando message ausente` | Fallback para `error.response.data.error` |
+| `deve usar mensagem padrao quando erro nao tem response` | Erro de rede sem response → "Erro desconhecido" |
+| `deve alterar carregando durante a requisicao` | Controle manual da Promise: loading `true` → resolve → loading `false` |
+
+**Padrão:**
+```typescript
+const { result } = renderHook(() => usaEntrarViewModel(repositoryMock, definirAutMock));
+act(() => { result.current.definirEmail('a@b.com'); });
+await act(async () => { await result.current.login(onSuccess); });
+```
+
+#### `usuario.repository.spec.ts` — Testes do repositório
+
+Mocka `api.service` (axios) para isolar a camada HTTP.
+
+| Teste | O que verifica |
+|-------|----------------|
+| `deve chamar api.post com url e dados corretos` | `api.post('/usuarios/entrar', { email, senha })` |
+| `deve retornar token_usuario da resposta` | Extrai `token_usuario` do `{ token_usuario: string }` |
+| `deve propagar erro quando api.post rejeita` | Erro do axios é relançado como rejeição da Promise |
+
+#### Como rodar
+
+```bash
+npm test -w @monorepo/web           # Todos os testes do frontend
+npx jest --watch                     # Modo watch (da raiz)
+```
+
 ---
 
 ## Registros centrais
